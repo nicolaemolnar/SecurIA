@@ -11,7 +11,7 @@ Database: PostgreSQL 11
 
 CREATE TABLE "User"
 (
-  "email" Character varying(20) NOT NULL,
+  "email" Character varying NOT NULL,
   "password" Character varying NOT NULL,
   "first_name" Character varying NOT NULL,
   "surname" Character varying,
