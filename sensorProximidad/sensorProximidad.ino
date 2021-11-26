@@ -14,7 +14,7 @@ void loop() {
   int dist;
 
   dist = distance(txUS,rxUS);
-  Serial.println(dist);
+  Serial.print(dist);
   Serial.println(" cm.");
 }
 

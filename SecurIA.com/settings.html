@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <title>SECURIA - Settings</title>
+    <header class="p-3 bg-primary text-white">
+        <div class="container">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            
+            <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
+                
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/dashboard.html" class="nav-link px-2">Dashboard</a></li>
+                <li><a href="/gallery.html" class="nav-link px-2">Gallery</a></li>
+                <li><a href="/streaming.html" class="nav-link px-2">Streaming</a></li>
+                <li><a href="/contact.html" class="nav-link px-2">Contact us</a></li>
+                <li><a href="/about.html" class="nav-link px-2">About us</a></li>
+                <li><a href="/settings.html" class="nav-link px-2 text-secondary">Settings</a></li>
+            </ul>
+    
+            <div class="text-end">
+              <a href="/index.html"><button type="button" class="btn btn-outline-light me-2">Log out</button></a>
+                            <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
+            </div>
+          </div>
+        </div>
+      </header>
+</head>
+<body>
+    
+  <div class="container rounded-3 py-2 mt-5" style="border: 1px solid;">
+    <div class="content">
+        <div class="container">
+            <div class="row align-items-stretch no-gutters contact-wrap">
+                <div class="form h-100">
+                    <span class="h3 ">User Settings</span>
+                    <form class="mb-5" method="post" id="settingsForm" name="settingsForm">
+                      <div class="bg-light rounded-3">
+                        <div class="row mt-3 mx-3">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="" class="col-form-label ">Username </label>
+                                <input type="text" class="form-control" name="username" required=True id="username" placeholder="Your username">
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="" class="col-form-label ">Email </label>
+                                <input type="text" class="form-control" name="email" required=True did="email" placeholder="Your email">
+                            </div>
+                        </div>
+                        <div class="row mx-3">
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="" class="col-form-label ">Password</label>
+                                <input type="text" class="form-control" name="password" id="password" placeholder="Your password">
+                            </div>
+                            <div class="col-md-6 form-group mb-3">
+                                <label for="" class="col-form-label ">Confirm password</label>
+                                <input type="text" class="form-control" name="password_conf" id="password_conf" placeholder="Repeat password">
+                            </div>
+                        </div>
+                        <div class="row mx-3">
+                          <div class="col-md-6 form-group mb-3">
+                              <label for="firstname" class="col-form-label ">First Name</label>
+                              <input type="text" class="form-control" name="firstname" id="firstname" placeholder="First Name">
+                          </div>
+                          <div class="col-md-6 form-group mb-3">
+                              <label for="surname" class="col-form-label ">Surname</label>
+                              <input type="text" class="form-control" name="surname" id="surname" placeholder="Surname">
+                          </div>
+                      </div>
+                      <div class="row mx-3 ">
+                        <div class="col-md-6 form-group mb-3">
+                            <label for="phone" class="col-form-label ">Phone number</label>
+                            <input type="text" class="form-control" name="phone" id="phone" placeholder="(+34) 000 000 000">
+                        </div>
+                        <div class="col-md-6 form-group mb-3">
+                            <label for="birthdate" class="col-form-label ">Birth date</label>
+                            <input type="date" class="form-control" name="birthdate" id="birthdate">
+                        </div>
+                    </div>
+                  </div>
+                  <div class="mt-3">
+                    <span class="h3">System Settings</span>
+                  </div>
+                    <div class="bg-light mt-4 rounded-3">
+                        <div class="row mx-3">
+                          <div class="col-md-5 form-group mb-3">
+                            <label for="getPhotos" class="">Capture photos</label>
+                            <input type="checkbox" name="getPhotos">
+                          </div>
+                          <div class="col-md-5 form-group mb-3">
+                            <label for="getVideos" class="">Capture videos</label>
+                            <input type="checkbox" name="getVideos">
+                          </div>
+                          <div class="col-md-2 form-group mb-3">
+                            <label for="canStream" class="">Live Streaming</label>
+                            <input type="checkbox" name="canStream">
+                          </div>
+                        </div>
+                      </div>  
+                        <div class="row">
+                            <div class="col-md-12 mt-4 form-group">
+                              <input type="submit" value="Save Changes" class="btn btn-primary rounded-1 py-2 px-2" style="width: 100%;">
+                              <span class="submitting"></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="form-message-warning mt-4"></div>
+                        <div id="form-message-success" hidden=True>
+                            Your message was sent, thank you!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+
+  <footer class="bg-light pb-5">
+    <div class="container text-center">
+      <p class="font-italic text-muted mb-0">&copy; Copyrights SecurIA.com All rights reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>
