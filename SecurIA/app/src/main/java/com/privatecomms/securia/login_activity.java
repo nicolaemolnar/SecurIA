@@ -10,14 +10,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.CallableStatement;
+
 public class login_activity extends Activity {
 
-    private TextView ViewEmail;
-    private TextView ViewPass;
-    private Button btnlogin;
-    private Button btnregister;
-    private EditText inputEmailAddress;
-    private EditText inputPassword;
+    private TextView ViewEmail, ViewPass;
+    private Button btnlogin, btnregister;
+    private EditText inputEmailAddress, inputPassword;
+
+    //variable de conexion
+    private static conexionBD con=new conexionBD();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +36,24 @@ public class login_activity extends Activity {
         this.inputEmailAddress = this.findViewById(R.id.inputEmailAddress);
         this.inputPassword = this.findViewById(R.id.inputPassword);
 
-
         btnlogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Incio_Sesion(inputEmailAddress.getText().toString(),inputPassword.getText().toString());
+            }
+        });
+    }
 
-            public void onClick(View view) {
-                String email = inputEmailAddress.getText().toString();
-                String password = inputPassword.getText().toString();
+    //Crearemos la Función para Iniciar Sesion de Postgresql
+    public  void Incio_Sesion(String usuario, String clave){
+        try{
+            String storeProcedureCall="{CALL pa_logueo_android(?,?,?,?,?,?,?,?)}";
+            CallableStatement cStmt=con.conexionBD().prepareCall(storeProcedureCall);
+            //Estos dos primeros parametros son los de entrada
+            cStmt.setString(1,usuario);
+            cStmt.setString(2,clave);
 
 
-
-
-        }
 }
 
 
