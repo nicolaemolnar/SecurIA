@@ -181,7 +181,7 @@
         tools:layout_editor_absoluteY="11dp" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/btnConfig"
         android:layout_width="85dp"
         android:layout_height="42dp"
         android:text="Conf"
@@ -189,7 +189,7 @@
         tools:layout_editor_absoluteY="1dp" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/btnExit"
         android:layout_width="85dp"
         android:layout_height="42dp"
         android:text="Exit"

@@ -26,6 +26,9 @@ public class login_activity extends Activity {
     //variable de conexion
     private static conexionBD con=new conexionBD();
 
+    //atributos y sincronizacion
+    Atributos_Usuario atrib=Atributos_Usuario.getInstance();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,7 @@ public class login_activity extends Activity {
             }
         });
 
+
         btnregister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,26 +67,32 @@ public class login_activity extends Activity {
         try {
             String storeProcedureCall = "{CALL pa_logueo_android(?,?,?,?,?,?,?,?)}";
             CallableStatement cStmt = con.conexionBD().prepareCall(storeProcedureCall);
+
             //Estos dos primeros parametros son los de entrada
             cStmt.setString(1, usuario);
             cStmt.setString(2, clave);
+
             //Parametros de salida
             cStmt.registerOutParameter(3, Types.VARCHAR);
             cStmt.executeUpdate();
             String msj=cStmt.getString(3); //variable que recibiremos de postgresql
 
+        if (msj.equals("OK")){
+            //si el usuario y contraseña correctos entramos en el menu de la aplicación
+            Bundle extras = new Bundle();
+            extras.putString("email",usuario);
+            extras.putString("password",clave);
 
-
-
-            if (msj.equals("OK")){
-                //si el usuario y contraseña correctos entramos en el menu de la aplicación
-                Intent menu = new Intent(this, MainActivity.class);
-                startActivity(menu);
-            }else{
-                Toast.makeText(getApplicationContext(),msj,Toast.LENGTH_SHORT).show();
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            Intent menu = new Intent(this, MainActivity.class);
+            //Agrega el objeto bundle a el Intne
+            menu.putExtras(extras);
+            //Inicia Activity
+            startActivity(menu);
+        }else{
+            Toast.makeText(getApplicationContext(),msj,Toast.LENGTH_SHORT).show();
         }
+    } catch (SQLException throwables) {
+        throwables.printStackTrace();
     }
+}
 }
