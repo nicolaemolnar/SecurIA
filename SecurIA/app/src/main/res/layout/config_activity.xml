@@ -16,10 +16,10 @@
 
     <TextView
         android:id="@+id/textView9"
-        android:layout_width="109dp"
-        android:layout_height="20dp"
+        android:layout_width="138dp"
+        android:layout_height="31dp"
         android:foregroundTint="#FFFFFF"
-        android:text="Hello ...........!"
+        android:text="SETTINGS"
         android:textColor="#FFFFFF"
         tools:layout_editor_absoluteX="14dp"
         tools:layout_editor_absoluteY="11dp" />

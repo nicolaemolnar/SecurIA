@@ -15,21 +15,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnregister"
-        android:layout_width="292dp"
-        android:layout_height="48dp"
-        android:text="Register"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="596dp" />
 
     <EditText
         android:id="@+id/inputEmailAddress"
         android:layout_width="237dp"
         android:layout_height="44dp"
         android:ems="10"
+        android:hint= "introduzca su email"
         android:inputType="textEmailAddress"
         tools:layout_editor_absoluteX="114dp"
         tools:layout_editor_absoluteY="427dp" />
@@ -58,13 +50,31 @@
         android:layout_height="wrap_content"
         android:text="Password"
         tools:layout_editor_absoluteX="40dp"
-        tools:layout_editor_absoluteY="500dp" />
+        tools:layout_editor_absoluteY="499dp" />
+
+    <TextView
+        android:id="@+id/btnregister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Register here"
+        tools:layout_editor_absoluteX="249dp"
+        tools:layout_editor_absoluteY="651dp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You are not registered yet?"
+        tools:layout_editor_absoluteX="78dp"
+        tools:layout_editor_absoluteY="651dp" />
 
     <EditText
         android:id="@+id/inputPassword"
         android:layout_width="241dp"
         android:layout_height="44dp"
         android:ems="10"
+        android:hint= "introduzca su contraseña"
+        app:endIconMode="password_toggle"
         android:inputType="textPassword"
         tools:layout_editor_absoluteX="110dp"
         tools:layout_editor_absoluteY="484dp" />
@@ -73,13 +83,15 @@
         android:id="@+id/imageView2"
         android:layout_width="254dp"
         android:layout_height="257dp"
-        android:layout_marginBottom="64dp"
-        app:layout_constraintBottom_toTopOf="@+id/inputEmailAddress"
+        android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/securia_logo" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout
+
+
+
+
