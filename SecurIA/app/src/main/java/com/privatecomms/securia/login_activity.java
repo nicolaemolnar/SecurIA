@@ -18,8 +18,8 @@ import java.sql.Types;
 
 public class login_activity extends Activity {
 
-    private TextView ViewEmail, ViewPass;
-    private Button btnlogin, btnregister;
+    private TextView ViewEmail, ViewPass,btnregister;
+    private Button btnlogin;
     private EditText inputEmailAddress, inputPassword;
     String urlWeb = "localhost:8080/registerhtml";
 

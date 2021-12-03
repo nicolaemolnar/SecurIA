@@ -20,11 +20,13 @@
         android:id="@+id/inputEmailAddress"
         android:layout_width="237dp"
         android:layout_height="44dp"
+        android:layout_marginEnd="60dp"
         android:ems="10"
-        android:hint= "introduzca su email"
+        android:hint="introduzca su email"
         android:inputType="textEmailAddress"
-        tools:layout_editor_absoluteX="114dp"
-        tools:layout_editor_absoluteY="427dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="421dp"
+        tools:ignore="MissingConstraints" />
 
     <Button
         android:id="@+id/btnlogin"
@@ -34,7 +36,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="548dp" />
+        tools:layout_editor_absoluteY="548dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/ViewEmail"
@@ -42,7 +45,8 @@
         android:layout_height="wrap_content"
         android:text="Email"
         tools:layout_editor_absoluteX="67dp"
-        tools:layout_editor_absoluteY="446dp" />
+        tools:layout_editor_absoluteY="446dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/ViewPass"
@@ -50,7 +54,8 @@
         android:layout_height="wrap_content"
         android:text="Password"
         tools:layout_editor_absoluteX="40dp"
-        tools:layout_editor_absoluteY="499dp" />
+        tools:layout_editor_absoluteY="499dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/btnregister"
@@ -58,7 +63,8 @@
         android:layout_height="wrap_content"
         android:text="Register here"
         tools:layout_editor_absoluteX="249dp"
-        tools:layout_editor_absoluteY="651dp" />
+        tools:layout_editor_absoluteY="651dp"
+        tools:ignore="MissingConstraints" />
 
     <TextView
         android:id="@+id/textView4"
@@ -66,7 +72,8 @@
         android:layout_height="wrap_content"
         android:text="You are not registered yet?"
         tools:layout_editor_absoluteX="78dp"
-        tools:layout_editor_absoluteY="651dp" />
+        tools:layout_editor_absoluteY="651dp"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/inputPassword"
@@ -77,7 +84,8 @@
         app:endIconMode="password_toggle"
         android:inputType="textPassword"
         tools:layout_editor_absoluteX="110dp"
-        tools:layout_editor_absoluteY="484dp" />
+        tools:layout_editor_absoluteY="484dp"
+        tools:ignore="MissingConstraints" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -90,7 +98,7 @@
         app:layout_constraintTop_toBottomOf="@+id/view"
         app:srcCompat="@drawable/securia_logo" />
 
-</androidx.constraintlayout.widget.ConstraintLayout
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
