@@ -21,7 +21,7 @@ public class login_activity extends Activity {
     private TextView ViewEmail, ViewPass;
     private Button btnlogin, btnregister;
     private EditText inputEmailAddress, inputPassword;
-    String urlWeb = "https://SecurIA.com";
+    String urlWeb = "localhost:8080/registerhtml";
 
     //variable de conexion
     private static conexionBD con=new conexionBD();
