@@ -182,13 +182,4 @@ class MQTT_Manager{
     }
 
 };
-
-MQTT_Manager mqtt_manager("", 5555, "", "", "", "", "", "")
-
-void setup(){
-    
-}
-
-void loop(){
-
 }
