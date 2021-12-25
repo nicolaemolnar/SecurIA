@@ -38,10 +38,13 @@ public class doContact extends HttpServlet {
 
         // TODO Redirect to confirmation page if successful
         if (validContact){
-            response.sendRedirect("/securia/confimationPage");//Pagina de confimacion
+            response.sendRedirect("/securia/confirmationPage"); // Page to confirm insertion
 
         }else{
             response.sendRedirect("/securia/contact.html");
         }
+
+        // TODO Close connection to database
+        db.closeConnection();
     }
 }

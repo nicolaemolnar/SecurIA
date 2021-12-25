@@ -37,7 +37,7 @@ public class DBConnection {
         return this.connection != null;
     }
 
-    public void closeConnection(Connection connection) {
+    public void closeConnection() {
         try {
             connection.close();
         } catch (Exception e) {
@@ -106,4 +106,6 @@ public class DBConnection {
         // TODO Return true if successful, false if not
         return true;
     }
+
+
 }

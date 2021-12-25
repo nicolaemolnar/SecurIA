@@ -44,6 +44,9 @@ public class doLogin extends HttpServlet {
             // TODO If the user is not valid, redirect to the login page
             response.sendRedirect("/securia/index.html");
         }
+
+        // TODO Close the connection to the database
+        db.closeConnection();
     }
 
 }
