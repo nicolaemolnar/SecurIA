@@ -21,14 +21,15 @@ public class DBConnection {
         this.password = password;
     }
 
-    public void obtainConnection() {
+    /*  ============================== Connection Management ==============================*/
+    public void obtainConnection() throws SQLException {
         Connection connection = null;
         try {
             Class.forName("org.postgresql.Driver");
-            connection = DriverManager.getConnection("jdbc:postgresql://" + hostName + ":" + portNumber + "/" + dbName, userName, password);
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+        connection = DriverManager.getConnection("jdbc:postgresql://" + hostName + ":" + portNumber + "/" + dbName, userName, password);
 
         this.connection = connection;
     }
@@ -62,29 +63,35 @@ public class DBConnection {
     }
 
     /* ============================== SQL Calls ============================== */
-    public String login(String email, String password) {
+    public String login(String email, String password) throws SQLException {
         // TODO Prepare SQL call
         Statement csmt = null;
         String username = "";
 
-        try {
-            csmt = connection.createStatement();
+        csmt = connection.createStatement();
 
-            // TODO Get the username from the database
-            beginTransaction(csmt);
-            String query = "SELECT first_name FROM Client WHERE email = '" + email + "' AND password = '" + password + "'";
-            ResultSet rs = csmt.executeQuery(query);
+        // TODO Get the username from the database
+        String query = "SELECT first_name FROM \"Client\" WHERE email = '" + email + "' AND password = '" + password + "'";
+        ResultSet rs = csmt.executeQuery(query);
 
-            if (rs.next()) {// If the table is not empty
-                username = rs.getString("first_name");
-            }
-            closeTransaction(csmt);
-
-        }catch (SQLException e) {
-           cancelTransaction(csmt);
+        if (rs.next()) {// If the table is not empty
+            username = rs.getString("first_name");
         }
         // TODO Return the username if the user exists, null string if not
         return username;
+    }
+
+    public boolean register(String first_name, String email, String password, String surname, String phone, Date birth_date){
+        // TODO Prepare SQL call
+
+        // TODO Begin transaction
+
+        // TODO Insert the user into the Clients table
+
+        // TODO Commit transaction
+
+        // TODO Return true if successful, false if not (rollback)
+        return true;
     }
 
     public boolean insertContact(String name, String email, String phone, String company, String message){
@@ -106,6 +113,5 @@ public class DBConnection {
         // TODO Return true if successful, false if not
         return true;
     }
-
 
 }

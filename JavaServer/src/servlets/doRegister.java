@@ -4,13 +4,15 @@ import database.DBConnection;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class doLogin extends HttpServlet {
+public class doRegister extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public doLogin() {
+    public doRegister() {
         super();
     }
 
@@ -20,10 +22,7 @@ public class doLogin extends HttpServlet {
     }
 
     protected void doPost(@NotNull HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Obtain parameters from POST request
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String username = "";
+        // TODO: Obtain parameters from POST request
 
         // TODO Obtain connection to database
         DBConnection db = new DBConnection("postgres","123456");
@@ -31,18 +30,12 @@ public class doLogin extends HttpServlet {
             db.obtainConnection();
 
             if (db.isConnected()) {
-                // TODO Check if the user is valid
-                username = db.login(email, password);
+                // TODO Insert user into database
             }
 
-            // TODO If the user is valid, set the session attribute
-            if (!username.equals("")) {
-                // TODO Redirect to the home page
-                response.sendRedirect("/securia/dashboard.html");
-            }else{
-                // TODO If the user is not valid, redirect to the login page
-                response.sendRedirect("/securia/error.jsp?error=login&email="+email+"&password="+password);
-            }
+            // TODO: If user was inserted successfully, redirect to login page
+
+            // TODO: If user was not inserted successfully, redirect to registration page
 
             // TODO Close the connection to the database
             db.closeConnection();

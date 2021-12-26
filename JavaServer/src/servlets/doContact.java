@@ -14,7 +14,7 @@ public class doContact extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        // TODO implement doGet
+        // TODO Rediret to POST method
         doPost(request, response);
     }
 
@@ -29,7 +29,11 @@ public class doContact extends HttpServlet {
 
         // TODO Connect to database
         DBConnection db = new DBConnection("postgres","123456");
-        db.obtainConnection();
+        try {
+            db.obtainConnection();
+        }catch (Exception e){
+            response.sendRedirect("/securia/error.jsp?error=database");
+        }
 
         // TODO Insert contact into database
         if (db.isConnected()) {

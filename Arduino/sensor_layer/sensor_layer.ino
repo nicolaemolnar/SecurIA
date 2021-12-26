@@ -18,11 +18,11 @@ void loop() {
 
 
     // Check if light_sensor can see, if it doesn't, turn on the light_bulb
-/**    if (can_see_entity(ldr_pin, threshold)){
+    if (can_see_entity(ldr_pin, threshold)){
         digitalWrite(light_bulb, LOW);
     }else{
         digitalWrite(light_bulb, HIGH);
-    }*/
+    }
 
     if (detect_movement(ir_pin)){
       digitalWrite(light_bulb, HIGH);
