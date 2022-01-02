@@ -15,8 +15,9 @@ void setup() {
 
 void loop() {
     // TODO: Comunicate with MQTT Broker
-
-
+    //Define parameters of the MQTT manager and set up connection
+    MQTT_Manager mqtt_manager = MQTT_Manager(const char* mqtt_server, const int mqtt_port, const char* mqtt_user, const char* mqtt_password, const char* mqtt_client_id, const char* wifi_ssid, const char* wifi_password);
+    mqtt_manager.setup();
     // Check if light_sensor can see, if it doesn't, turn on the light_bulb
     if (can_see_entity(ldr_pin, threshold)){
         digitalWrite(light_bulb, LOW);
