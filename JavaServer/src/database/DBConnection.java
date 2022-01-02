@@ -1,5 +1,6 @@
 package database;
 
+import logic.Log;
 import org.postgresql.jdbc.*;
 
 import java.sql.*;
@@ -19,6 +20,7 @@ public class DBConnection {
     public DBConnection(String username, String password) {
         this.userName = username;
         this.password = password;
+        Log.logdb.info("Database Connection class created");
     }
 
     /*  ============================== Connection Management ==============================*/
@@ -26,10 +28,13 @@ public class DBConnection {
         Connection connection = null;
         try {
             Class.forName("org.postgresql.Driver");
+            connection = DriverManager.getConnection("jdbc:postgresql://" + hostName + ":" + portNumber + "/" + dbName, userName, password);
+            Log.logdb.info("Established connection to postgresql database "+hostName+" as "+userName+":"+connection.toString());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+            Log.logdb.info("Error loading PostgreSQL JDBC driver");
         }
-        connection = DriverManager.getConnection("jdbc:postgresql://" + hostName + ":" + portNumber + "/" + dbName, userName, password);
+
 
         this.connection = connection;
     }
@@ -41,25 +46,30 @@ public class DBConnection {
     public void closeConnection() {
         try {
             connection.close();
+            Log.logdb.info("Closed connection "+connection.toString()+".");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.logdb.info("Error closing connection "+connection.toString()+".");
         }
     }
 
     public void beginTransaction(Statement csmt) throws SQLException {
         csmt.execute("BEGIN");
+        Log.logdb.info("Transaction started by connection "+csmt.getConnection());
     }
 
     public void cancelTransaction(Statement csmt) {
         try{
             csmt.execute("ROLLBACK");
+            Log.logdb.info("Rollback from "+csmt.getConnection());
         } catch (SQLException e) {
-            System.out.println("FATAL ERROR CANCELING TRANSACTION");
+            Log.logdb.info("Error rolling back transaction.");
         }
     }
 
     public void closeTransaction(Statement csmt) throws SQLException {
         csmt.execute("COMMIT");
+        Log.logdb.info("Transaction committed by connection "+csmt.getConnection());
     }
 
     /* ============================== SQL Calls ============================== */
@@ -76,10 +86,13 @@ public class DBConnection {
         // TODO Get the username from the database
         String query = "SELECT first_name FROM \"Client\" WHERE email = '" + email + "' AND password = '" + password + "'";
         ResultSet rs = csmt.executeQuery(query);
+        csmt.close();
+        Log.logdb.info("Executed select from connection "+csmt.getConnection());
 
         if (rs.next()) {// If the table is not empty
             username = rs.getString("first_name");
         }
+
         // TODO Return the username if the user exists, null string if not
         return username;
     }
@@ -110,6 +123,7 @@ public class DBConnection {
         // TODO Insert the contact into the contacts table
             String query = "INSERT INTO public.Contact(name,email,phone,company,message) VALUES (name,email,phone,company,message);";
             csmt.execute(query);  //Donde capturo si no se realiza bien el insert para dev false
+            Log.logdb.info("Executed insert from connection "+csmt.getConnection());
         // TODO Commit transaction
             closeTransaction(csmt);
         }catch (SQLException e) {
