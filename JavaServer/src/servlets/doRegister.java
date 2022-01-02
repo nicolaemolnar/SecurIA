@@ -30,7 +30,7 @@ public class doRegister extends HttpServlet {
             db.obtainConnection();
 
             if (db.isConnected()) {
-                // TODO Insert user into database
+                // TODO: Insert user into database
             }
 
             // TODO: If user was inserted successfully, redirect to login page

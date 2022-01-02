@@ -41,7 +41,7 @@ public class doLogin extends HttpServlet {
                 response.sendRedirect("/securia/dashboard.html");
             }else{
                 // TODO If the user is not valid, redirect to the login page
-                response.sendRedirect("/securia/error.jsp?error=login&email="+email+"&password="+password);
+                response.sendRedirect("/securia/error.jsp?error=login");
             }
 
             // TODO Close the connection to the database
