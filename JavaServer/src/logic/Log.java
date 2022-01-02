@@ -1,10 +1,10 @@
 package logic;
 
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 public class Log {
-    public static Logger log = LogManager.getLogManager().getLogger("Log");
-    public static Logger logmqtt = LogManager.getLogManager().getLogger("LogMQTT");
-    public static Logger logdb = LogManager.getLogManager().getLogger("LogDB");
+    public static Logger log = LogManager.getLogger("Log");
+    public static Logger logmqtt = LogManager.getLogger("LogMQTT");
+    public static Logger logdb = LogManager.getLogger("LogDB");
 }

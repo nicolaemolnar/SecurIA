@@ -1,6 +1,7 @@
 package servlets;
 
 import database.DBConnection;
+import logic.Log;
 import org.jetbrains.annotations.NotNull;
 
 import javax.servlet.ServletException;
@@ -23,31 +24,36 @@ public class doLogin extends HttpServlet {
         // Obtain parameters from POST request
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        Log.log.info("Login attempt with email: " + email);
+
         String username = "";
 
-        // TODO Obtain connection to database
+        // Obtain connection to database
         DBConnection db = new DBConnection("postgres","123456");
         try {
             db.obtainConnection();
 
             if (db.isConnected()) {
-                // TODO Check if the user is valid
+                // Check if the user is valid
                 username = db.login(email, password);
             }
 
-            // TODO If the user is valid, set the session attribute
+            // If the user is valid, set the session attribute
             if (!username.equals("")) {
-                // TODO Redirect to the home page
+                // Redirect to the home page
                 response.sendRedirect("/securia/dashboard.html");
+                Log.log.info("Login successful for user: " + username);
             }else{
-                // TODO If the user is not valid, redirect to the login page
+                // If the user is not valid, redirect to the login page
                 response.sendRedirect("/securia/error.jsp?error=login");
+                Log.log.info("Login failed for user: " + username);
             }
 
-            // TODO Close the connection to the database
+            // Close the connection to the database
             db.closeConnection();
         }catch (Exception e){
             response.sendRedirect("/securia/error.jsp?error=database");
+            Log.log.error("Error connecting to database: " + e.getMessage());
         }
     }
 }
