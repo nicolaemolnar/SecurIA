@@ -64,7 +64,7 @@ public class DBConnection {
 
     /* ============================== SQL Calls ============================== */
     public String login(String email, String password) throws SQLException {
-        // TODO Prepare SQL call
+        // Prepare SQL call
         Statement csmt = null;
         String username = "";
 
@@ -88,6 +88,8 @@ public class DBConnection {
         // TODO Prepare SQL call
         Statement csmt = null;
         // TODO Begin transaction
+
+        // TODO Check if email already exists in database
 
         // TODO Insert the user into the Clients table
 

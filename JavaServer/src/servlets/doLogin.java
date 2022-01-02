@@ -25,26 +25,26 @@ public class doLogin extends HttpServlet {
         String password = request.getParameter("password");
         String username = "";
 
-        // TODO Obtain connection to database
+        // Obtain connection to database
         DBConnection db = new DBConnection("postgres","123456");
         try {
             db.obtainConnection();
 
             if (db.isConnected()) {
-                // TODO Check if the user is valid
+                // Check if the user is valid
                 username = db.login(email, password);
             }
 
-            // TODO If the user is valid, set the session attribute
+            // If the user is valid, set the session attribute
             if (!username.equals("")) {
-                // TODO Redirect to the home page
+                // Redirect to the home page
                 response.sendRedirect("/securia/dashboard.html");
             }else{
-                // TODO If the user is not valid, redirect to the login page
+                // If the user is not valid, redirect to the login page
                 response.sendRedirect("/securia/error.jsp?error=login");
             }
 
-            // TODO Close the connection to the database
+            // Close the connection to the database
             db.closeConnection();
         }catch (Exception e){
             response.sendRedirect("/securia/error.jsp?error=database");
