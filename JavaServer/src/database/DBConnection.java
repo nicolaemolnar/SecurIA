@@ -70,6 +70,9 @@ public class DBConnection {
 
         csmt = connection.createStatement();
 
+        email = email.replace("'", "");
+        password = password.replace("'", "");
+
         // TODO Get the username from the database
         String query = "SELECT first_name FROM \"Client\" WHERE email = '" + email + "' AND password = '" + password + "'";
         ResultSet rs = csmt.executeQuery(query);
@@ -83,7 +86,7 @@ public class DBConnection {
 
     public boolean register(String first_name, String email, String password, String surname, String phone, Date birth_date){
         // TODO Prepare SQL call
-
+        Statement csmt = null;
         // TODO Begin transaction
 
         // TODO Insert the user into the Clients table
