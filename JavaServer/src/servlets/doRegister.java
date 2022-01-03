@@ -1,8 +1,10 @@
 package servlets;
 
 import database.DBConnection;
+import logic.Log;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 
@@ -21,7 +23,15 @@ public class doRegister extends HttpServlet {
 
 
     protected void doGet(HttpServletRequest request, @NotNull HttpServletResponse response) throws ServletException, IOException {
-        response.sendError(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "GET METHOD IS NOT ALLOWED ON THIS LEVEL OF SECURITY");
+        // TODO: Obtain GET parameters
+
+        // TODO: Establish database connection
+
+        // TODO: Call register query
+
+        // TODO: Close database connection
+
+        // TODO: Send response (if needed, JSON)
     }
 
     protected void doPost(@NotNull HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -34,9 +44,14 @@ public class doRegister extends HttpServlet {
         String phone_number = request.getParameter("phone_number");
         String birth_date = request.getParameter("birth_date");
 
-        Date date1 =new SimpleDateFormat("dd/MM/yyyy").parse(sDate1); 
-        if password.equals(request.getParameter("password2") && date1.before(new Date())){
-            // TODO Obtain connection to database
+        Date date1 = null;
+        try {
+            date1 = new SimpleDateFormat("dd/MM/yyyy").parse(birth_date);
+        } catch (ParseException e) {
+            Log.log.error("Error parsing birth_date");
+        }
+        if (password.equals(request.getParameter("password2")) && date1.before(new Date())){
+            // Obtain connection to database
             DBConnection db = new DBConnection("postgres","123456");
 
             try {
@@ -44,13 +59,13 @@ public class doRegister extends HttpServlet {
 
                 if (db.isConnected()) {
                     // Insert user into database
-                    if (db.register(username, first_name, email, password, surname, phone_number, birth_date)){
+                    if (db.register(username, first_name, email, password, surname, phone_number, (java.sql.Date) date1)){
                         // If user was inserted successfully, redirect to login page
-                        response.sendRedirect("/securia/dashboard.html"); // TODO: change path to login page's path
+                        response.sendRedirect("/securia/login.html");
                     }
                     else{
-                        // If user was not inserted successfully, redirect to registration page
-                        response.sendRedirect("/securia/register.html"); 
+                        // If user was not inserted successfully, redirect to error page
+                        response.sendRedirect("/securia/error.jsp?error=register&cause=already_exists");
                     }
                  
                 }
@@ -61,6 +76,8 @@ public class doRegister extends HttpServlet {
                 response.sendRedirect("/securia/error.jsp?error=database");
         }
     }
-    else{response.sendRedirect(response.sendRedirect("/securia/error.jsp?error=register&cause=date_or_password");}
+    else{
+        response.sendRedirect("/securia/error.jsp?error=register&cause=date_or_password");
+    }
     }
 }
