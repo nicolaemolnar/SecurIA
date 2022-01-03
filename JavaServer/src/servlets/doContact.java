@@ -1,6 +1,7 @@
 package servlets;
 
 import database.DBConnection;
+import logic.Log;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +26,9 @@ public class doContact extends HttpServlet {
         String phone = request.getParameter("phone");
         String company = request.getParameter("company");
         String message = request.getParameter("message");
+
+        Log.log.info("doContact attempt:"+name+","+email+","+phone+","+company+","+message);
+
         boolean validContact =false;
 
         // TODO Connect to database
@@ -43,9 +47,10 @@ public class doContact extends HttpServlet {
         // TODO Redirect to confirmation page if successful
         if (validContact){
             response.sendRedirect("/securia/confirmationPage"); // Page to confirm insertion
-
+            Log.log.info("Added contact from "+email+" to database");
         }else{
-            response.sendRedirect("/securia/contact.html");
+            response.sendRedirect("/securia/error.jsp?error=contact");
+            Log.log.info("Failed to add contact from "+email+" to database");
         }
 
         // TODO Close connection to database

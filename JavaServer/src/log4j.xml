@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <Appenders>
+        <RollingFile name="Log" fileName="./log/securia.log" filePattern="./log/securia_%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5p %c{1}: %msg"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+                <TimeBasedTriggeringPolicy period="1d"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="DBLog" fileName="./log/securia_db.log" filePattern="./log/securia_db_%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5p %c{1}: %msg"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+                <TimeBasedTriggeringPolicy period="1d"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="MqttLog" fileName="./log/securia_mqtt.log" filePattern="./log/securia_mqtt_%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5p %c{1}: %msg"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+                <TimeBasedTriggeringPolicy period="1d"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="Log" level="INFO" additivity="FALSE">
+            <AppenderRef ref="Log" level="INFO"/>
+        </Logger>
+
+        <Logger name="DBLog" level="INFO" additivity="FALSE">
+            <AppenderRef ref="DBLog" level="INFO"/>
+        </Logger>
+
+        <Logger name="MqttLog" level="INFO" additivity="FALSE">
+            <AppenderRef ref="MqttLog" level="INFO"/>
+        </Logger>
+    </Loggers>
+</Configuration>
+
