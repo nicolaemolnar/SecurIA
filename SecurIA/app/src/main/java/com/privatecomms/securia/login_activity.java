@@ -3,6 +3,7 @@ package com.privatecomms.securia;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.sql.CallableStatement;
@@ -35,7 +37,7 @@ public class login_activity extends Activity {
     AsyncHttpClient client;
 
 
-    String urlLoginServlet = "http://25.62.36.206:8080/JavaServer/doLogin";
+    //String urlLoginServlet = "http://25.62.36.206:8080/JavaServer/doLogin";
     String urlRegister ="http://25.62.36.206:8080/securia/register.html";
 
 
@@ -64,7 +66,11 @@ public class login_activity extends Activity {
                 e = emailAddress.getText().toString();
                 p = password.getText().toString();
 
-                params = new RequestParams();
+                String urlLoginServlet = "http://192.168.1.4:43746/Progetto_TWEB/Login?username=" + e  + "&password=" + p;
+                GetXMLTask task = new GetXMLTask();
+                task.execute(new String[] { urlLoginServlet });
+
+                /*params = new RequestParams();
                 params.put("email", e);
                 params.put("password", p);
                 client.post(urlLoginServlet, params, new JsonHttpResponseHandler() {
@@ -80,8 +86,7 @@ public class login_activity extends Activity {
                         Toast.makeText(login_activity.this, "Somethig went wrong", Toast.LENGTH_SHORT).show();
                     }
                     //Incio_Sesion(emailAddress.getText().toString(),password.getText().toString());
-                });
-
+                });*/
 
             }
         });
@@ -94,6 +99,77 @@ public class login_activity extends Activity {
                 startActivity(i);
             }
         });
+    }
+
+
+
+
+
+    private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+        @Override
+        protected JSONObject doInBackground(String... urls) {
+            JSONObject output = null;
+            for (String url : urls) {
+                String json_string = getOutputFromUrl(url);
+                JSONParser parser = new JSONParser();
+                try {
+                    output = (JSONObject) parser.parse(json_string);
+                }
+                catch(ParseException ecc){
+
+                }
+            }
+            return output;
+        }
+
+        private String getOutputFromUrl(String url) {
+            StringBuffer output = new StringBuffer("");
+            try {
+                InputStream stream = getHttpConnection(url);
+                BufferedReader buffer = new BufferedReader(
+                        new InputStreamReader(stream));
+                String s = "";
+                while ((s = buffer.readLine()) != null)
+                    output.append(s);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return output.toString();
+        }
+
+        // Makes HttpURLConnection and returns InputStream
+        private InputStream getHttpConnection(String urlString)
+                throws IOException {
+            InputStream stream = null;
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+
+            try {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+
+                if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                    stream = httpConnection.getInputStream();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return stream;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject output) {
+            Intent redirect_normal = new Intent(login_page.this, normal_user.class);
+            String type = output.get("type").toString();
+            if(type.equals("normal"))
+                startActivity(redirect_normal);
+            else if(type.equals("NULL"))
+                user.setText("LOGIN FAILED");
+            else if(type.equals("admin"))
+                user.setText("NOT NORMAL");
+
+        }
     }
 }
 

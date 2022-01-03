@@ -16,7 +16,7 @@ public class config_activity extends Activity {
     EditText userName,email, password, repeatedPassword;
     Button btnBack,btnExit;
 
-    SwitchCompat notifications,fotos,stream,videosCapture;
+    SwitchCompat sendNotifications,captureFotos,lifeStream,captureVideos;
     boolean stateSwitch1,stateSwitch2,stateSwitch3,stateSwitch4;
 
     SharedPreferences preferences;
@@ -48,10 +48,10 @@ public class config_activity extends Activity {
         stateSwitch3 = preferences.getBoolean("lifeStream",false);
         stateSwitch4 = preferences.getBoolean("captureVideos",false);
 
-        notifications = this.findViewById(R.id.sendNotifications);
-        fotos = this.findViewById(R.id.captureFotos);
-        stream = this.findViewById(R.id.lifeStream);
-        videosCapture = this.findViewById(R.id.captureVideos);
+        sendNotifications = this.findViewById(R.id.sendNotifications);
+        captureFotos = this.findViewById(R.id.captureFotos);
+        lifeStream = this.findViewById(R.id.lifeStream);
+        captureVideos = this.findViewById(R.id.captureVideos);
 
         //funciones de botones
         btnBack.setOnClickListener(new View.OnClickListener() {
