@@ -2,6 +2,7 @@ package com.privatecomms.securia;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,8 +20,16 @@ import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -66,7 +75,7 @@ public class login_activity extends Activity {
                 e = emailAddress.getText().toString();
                 p = password.getText().toString();
 
-                String urlLoginServlet = "http://192.168.1.4:43746/Progetto_TWEB/Login?username=" + e  + "&password=" + p;
+                String urlLoginServlet = "http://25.62.36.206:8080/JavaServer/doLogin?username=" + e  + "&password=" + p;
                 GetXMLTask task = new GetXMLTask();
                 task.execute(new String[] { urlLoginServlet });
 
@@ -102,10 +111,8 @@ public class login_activity extends Activity {
     }
 
 
-
-
-
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+        
         @Override
         protected JSONObject doInBackground(String... urls) {
             JSONObject output = null;
@@ -115,7 +122,7 @@ public class login_activity extends Activity {
                 try {
                     output = (JSONObject) parser.parse(json_string);
                 }
-                catch(ParseException ecc){
+                catch(Exception e){
 
                 }
             }
@@ -157,10 +164,10 @@ public class login_activity extends Activity {
             }
             return stream;
         }
-
+/**
         @Override
         protected void onPostExecute(JSONObject output) {
-            Intent redirect_normal = new Intent(login_page.this, normal_user.class);
+            Intent redirect_normal = new Intent(login_activity.this, normal_user.class);
             String type = output.get("type").toString();
             if(type.equals("normal"))
                 startActivity(redirect_normal);
@@ -169,7 +176,7 @@ public class login_activity extends Activity {
             else if(type.equals("admin"))
                 user.setText("NOT NORMAL");
 
-        }
+        }**/
     }
 }
 
