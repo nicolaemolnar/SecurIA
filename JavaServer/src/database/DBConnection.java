@@ -84,19 +84,35 @@ public class DBConnection {
         return username;
     }
 
-    public boolean register(String first_name, String email, String password, String surname, String phone, Date birth_date){
+    public boolean register(String username, String first_name, String email, String password, String surname, String phone, Date birth_date){
         // TODO Prepare SQL call
         Statement csmt = null;
-        // TODO Begin transaction
+        boolean exito = false;
 
-        // TODO Check if email already exists in database
+       try {
+            // Begin transaction
+            csmt = connection.createStatement();
+            beginTransaction(csmt);
 
-        // TODO Insert the user into the Clients table
+            // Insert the contact into the contacts table
+            // Check if email already exists in database
+            if(csmt.executeQuery("SELECT FROM \"Client\" WHERE email = '" + email +"' OR username = '" + username + "'") == null){
+                String query = "INSERT INTO public.\"Client\" ( email, password, first_name, surname, phone_number, birth_date) 
+                VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone_number + "', '" + birth_date + "')";
+                // Insert the user into the Clients table
+                csmt.execute(query);  
+                // Commit transaction
+                closeTransaction(csmt);
+                exito = true;
+            }
+            
+        }catch (SQLException e) {
+            cancelTransaction(csmt);
+        }
 
-        // TODO Commit transaction
 
-        // TODO Return true if successful, false if not (rollback)
-        return true;
+        // Return true if successful, false if not (rollback) or email already exists in the database
+        return exito;
     }
 
     public boolean insertContact(String name, String email, String phone, String company, String message){
