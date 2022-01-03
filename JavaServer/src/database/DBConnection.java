@@ -98,7 +98,7 @@ public class DBConnection {
     }
 
     public boolean register(String username, String first_name, String email, String password, String surname, String phone, Date birth_date){
-        // TODO Prepare SQL call
+        // Prepare SQL call
         Statement csmt = null;
         boolean exito = false;
 
@@ -109,9 +109,9 @@ public class DBConnection {
 
             // Insert the contact into the contacts table
             // Check if email already exists in database
-            if(csmt.executeQuery("SELECT FROM \"Client\" WHERE email = '" + email +"' OR username = '" + username + "'") == null){
-                String query = "INSERT INTO public.\"Client\" ( email, password, first_name, surname, phone_number, birth_date) 
-                VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone_number + "', '" + birth_date + "')";
+            if(!csmt.executeQuery("SELECT FROM \"Client\" WHERE email = '" + email +"' OR username = '" + username + "'").next()){
+                String query = "INSERT INTO public.\"Client\" ( email, password, first_name, surname, phone_number, birth_date)"+
+                "VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone + "', '" + birth_date + "')";
                 // Insert the user into the Clients table
                 csmt.execute(query);  
                 // Commit transaction
