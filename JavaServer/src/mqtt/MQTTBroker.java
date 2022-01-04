@@ -8,7 +8,7 @@ public class MQTTBroker
     private static String broker;
     private static String clientId;
 
-    public MQTTBroker(int qos, String ip, int port, String clientId)
+    public MQTTBroker(String clientId, String ip, int port, int qos)
     {
         this.qos = qos;
         this.broker = "tcp://"+ip+":"+port;

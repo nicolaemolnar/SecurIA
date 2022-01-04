@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class doContact extends HttpServlet {
-    public doContact() {
+public class ContactServlet extends HttpServlet {
+    public ContactServlet() {
         super();
     }
 
@@ -27,7 +27,7 @@ public class doContact extends HttpServlet {
         String company = request.getParameter("company");
         String message = request.getParameter("message");
 
-        Log.log.info("doContact attempt:"+name+","+email+","+phone+","+company+","+message);
+        Log.log.info("ContactServlet attempt:"+name+","+email+","+phone+","+company+","+message);
 
         boolean validContact =false;
 

@@ -2,10 +2,11 @@ package servlets;
 
 import database.DBConnection;
 import logic.Log;
+import logic.Logic;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
-import java.util.Date;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 
 import javax.servlet.ServletException;
@@ -14,10 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class doRegister extends HttpServlet {
+public class RegisterServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public doRegister() {
+    public RegisterServlet() {
         super();
     }
 
@@ -44,13 +45,9 @@ public class doRegister extends HttpServlet {
         String phone_number = request.getParameter("phone_number");
         String birth_date = request.getParameter("birth_date");
 
-        Date date1 = null;
-        try {
-            date1 = new SimpleDateFormat("dd/MM/yyyy").parse(birth_date);
-        } catch (ParseException e) {
-            Log.log.error("Error parsing birth_date");
-        }
-        if (password.equals(request.getParameter("password2")) && date1.before(new Date())){
+        Date date1 = Date.valueOf(Logic.formatDate(birth_date));
+
+        if (password.equals(request.getParameter("password2")) && date1.before(new Date(System.currentTimeMillis()))) {
             // Obtain connection to database
             DBConnection db = new DBConnection("postgres","123456");
 
@@ -59,17 +56,15 @@ public class doRegister extends HttpServlet {
 
                 if (db.isConnected()) {
                     // Insert user into database
-                    if (db.register(username, first_name, email, password, surname, phone_number, (java.sql.Date) date1)){
+                    if (db.register(username, first_name, email, password, surname, phone_number, date1)){
                         // If user was inserted successfully, redirect to login page
-                        response.sendRedirect("/securia/login.html");
+                        response.sendRedirect("/securia/index.html");
                     }
                     else{
                         // If user was not inserted successfully, redirect to error page
                         response.sendRedirect("/securia/error.jsp?error=register&cause=already_exists");
                     }
-                 
                 }
-
                 // Close the connection to the database
                 db.closeConnection();
             }catch (Exception e){

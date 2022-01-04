@@ -17,12 +17,13 @@ cTime = 0
 
 streaming = False
 
-MQTT_SERVER = "127.0.0.1"
+MQTT_SERVER = "localhost"
 MQTT_TOPIC = "Images"
 MQTT_PORT = 5555
+MQTT_PATH = "/sensor/camera/1/"
 MQTT_STREAMING = "Streaming"
 MQTT_LOG = "Camera Log"
-MQTT_CLIENT ="WebCam"
+MQTT_CLIENT ="Camera 1"
 
 prev = time.time()
 
@@ -59,12 +60,12 @@ while True:
         byteArr = bytearray(img)
         try:
             if(streaming):
-                publish.single(MQTT_STREAMING, byteArr, hostname=MQTT_SERVER, port=MQTT_PORT)
+                publish.single(MQTT_PATH+MQTT_STREAMING, byteArr, hostname=MQTT_SERVER, port=MQTT_PORT)
                 publish.single(MQTT_LOG,"Detected face at "+str(datetime.now().strftime("%d/%m/%Y, %H:%M:%S")), hostname=MQTT_SERVER, port=MQTT_PORT,client_id=MQTT_CLIENT)
                 print("Image sent to stream")
             
             if (time.time() - prev > 1):
-                publish.single(MQTT_TOPIC, byteArr, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
+                publish.single(MQTT_PATH+MQTT_TOPIC, byteArr, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
                 publish.single(MQTT_LOG,"Detected face at "+str(datetime.now().strftime("%d/%m/%Y, %H:%M:%S")), hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
                 print("Detected face at "+str(datetime.now().strftime("%d/%m/%Y, %H:%M:%S")))
                 print("Image sent to server")

@@ -3,7 +3,10 @@ package database;
 import logic.Log;
 import org.postgresql.jdbc.*;
 
+import javax.xml.transform.Result;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DBConnection {
 
@@ -72,6 +75,15 @@ public class DBConnection {
         Log.logdb.info("Transaction committed by connection "+csmt.getConnection());
     }
 
+    public void PreparedStatement (String sql) {
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            Log.logdb.info("Prepared statement " + sql + " created by connection " + connection);
+        } catch (SQLException e) {
+            Log.logdb.error("Error creating prepared statement:"+e.getMessage());
+        }
+    }
+
     /* ============================== SQL Calls ============================== */
     public String login(String email, String password) throws SQLException {
         // Prepare SQL call
@@ -84,14 +96,19 @@ public class DBConnection {
         password = password.replace("'", "");
 
         // TODO Get the username from the database
-        String query = "SELECT first_name FROM \"Client\" WHERE email = '" + email + "' AND password = '" + password + "'";
+        // SELECT first_name from cliente where email=? and password=?
+        String query = "SELECT first_name FROM \"Client\" WHERE email = '" + email + "' AND password = '" + password + "';";
         ResultSet rs = csmt.executeQuery(query);
-        csmt.close();
+
         Log.logdb.info("Executed select from connection "+csmt.getConnection());
 
         if (rs.next()) {// If the table is not empty
             username = rs.getString("first_name");
+            
         }
+
+        rs.close();
+        csmt.close();
 
         // TODO Return the username if the user exists, null string if not
         return username;
@@ -109,18 +126,20 @@ public class DBConnection {
 
             // Insert the contact into the contacts table
             // Check if email already exists in database
-            if(!csmt.executeQuery("SELECT FROM \"Client\" WHERE email = '" + email +"' OR username = '" + username + "'").next()){
+            if(!csmt.executeQuery("SELECT FROM \"Client\" WHERE email = '" + email +"'").next()){
                 String query = "INSERT INTO public.\"Client\" ( email, password, first_name, surname, phone_number, birth_date)"+
                 "VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone + "', '" + birth_date + "')";
+                Log.logdb.info("Inserted user with email "+email+" into database.");
+
                 // Insert the user into the Clients table
                 csmt.execute(query);  
                 // Commit transaction
                 closeTransaction(csmt);
                 exito = true;
             }
-            
         }catch (SQLException e) {
             cancelTransaction(csmt);
+            Log.logdb.error("Error registering user "+username+"."+e.getMessage());
         }
 
 
@@ -148,5 +167,90 @@ public class DBConnection {
         // TODO Return true if successful, false if not
         return true;
     }
+
+    public void delete_account(String email) throws SQLException {
+        // Prepare SQL call
+        Statement csmt = null;
+
+        csmt = connection.createStatement();
+
+        // Delete the account from the database
+        String query = "DELETE FROM \"Client\" WHERE email = '" + email + "';";
+        csmt.execute(query);
+
+        Log.logdb.info("Deleted account with email '"+email+" from database. Author:"+csmt.getConnection());
+
+        csmt.close();
+    }
+
+    public ResultSet GetSensors(){
+        Statement csmt = null;
+        ResultSet rs = null;
+        try {
+            csmt = connection.createStatement();
+            beginTransaction(csmt);
+            String query = "SELECT * FROM \"Sensor_type\" ";
+            rs = csmt.executeQuery(query);
+            Log.logdb.info("Executed Select from connection "+csmt.getConnection());
+            closeTransaction(csmt);
+        }catch (SQLException e) {
+            cancelTransaction(csmt);
+        }
+        return rs;
+
+    }
+
+    public ResultSet GetCamera(){
+        Statement csmt = null;
+        ResultSet rs = null;
+        try {
+            csmt = connection.createStatement();
+            beginTransaction(csmt);
+            String query = "SELECT * FROM \"Camera\" ";
+            rs = csmt.executeQuery(query);
+            Log.logdb.info("Executed Select from connection "+csmt.getConnection());
+            closeTransaction(csmt);
+        }catch (SQLException e) {
+            cancelTransaction(csmt);
+        }
+        //como hago para que devuelva el select?
+        return rs;
+    }
+
+    public HashMap<String, String> getSettings(String email){
+        // Prepare SQL call
+        Statement csmt = null;
+        HashMap<String, String> settings = new HashMap<String, String>();
+
+        // Get the settings from the database
+        try {
+            // Begin transaction
+            csmt = connection.createStatement();
+            beginTransaction(csmt);
+            ResultSet res = csmt.executeQuery("SELECT * FROM \"Client\" natural join \"Configurations\" natural join \"System\"  " +
+                    "WHERE  email =" + email + ";");
+            //Close statement
+            closeTransaction(csmt);
+            //Store the settings in the HashMap (Tables: Client natural join Configurations natural join System)
+            settings.put("email", email);
+            settings.put("password", res.getString("password"));
+            settings.put("firstname", res.getString("first_name"));
+            settings.put("surname", res.getString("surname"));
+            settings.put("phone", res.getString("phone_number"));
+            settings.put("birthdate", res.getString("birth_date"));
+            settings.put("getPhotos", String.valueOf(res.getBoolean("capture_photos")));
+            settings.put("getVideos", String.valueOf(res.getBoolean("capture_videos")));
+            settings.put("canStream", String.valueOf(res.getBoolean("live_streaming")));
+        }catch (SQLException e) {
+            cancelTransaction(csmt);
+            Log.logdb.error("Error getting settings from user with email"+email+"."+e.getMessage());
+        }
+
+        //Return the HashMap
+        return settings;
+    }
+
+
+
 
 }

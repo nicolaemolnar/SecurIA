@@ -2,6 +2,7 @@ package servlets;
 
 import database.DBConnection;
 import logic.Log;
+import logic.Logic;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -10,30 +11,11 @@ import javax.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class doLogin extends HttpServlet {
+public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public doLogin() {
+    public LoginServlet() {
         super();
-    }
-
-    private String login(String email, String password) throws SQLException {
-        Log.log.info("Login attempt with email: " + email);
-
-        String username = "";
-
-        // Obtain connection to database
-        DBConnection db = new DBConnection("postgres","123456");
-        db.obtainConnection();
-
-        if (db.isConnected()) {
-            // Check if the user is valid
-            username = db.login(email, password);
-        }
-        // Close the connection to the database
-        db.closeConnection();
-
-        return username;
     }
 
     protected void doGet(HttpServletRequest request, @NotNull HttpServletResponse response) throws ServletException, IOException {
@@ -41,13 +23,13 @@ public class doLogin extends HttpServlet {
         String password = request.getParameter("password");
 
         try {
-            String username = login(email, password);
+            String username = Logic.login(email, password);
 
-            // TODO: Create response JSON
+            // Create response JSON
             JSONObject json = new JSONObject();
             json.put("successful_login", !username.equals(""));
 
-            // TODO: Send JSON response
+            // Send JSON response
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(json.toString());
@@ -62,12 +44,14 @@ public class doLogin extends HttpServlet {
         String password = request.getParameter("password");
 
         try{
-            String username = login(email, password);
+            String username = Logic.login(email, password);
 
             // If the user is valid, set the session attribute
             if (!username.equals("")) {
                 // Redirect to the home page
-                response.sendRedirect("/securia/dashboard.html");
+                HttpSession session = request.getSession();
+                session.setAttribute("email", email);
+                response.sendRedirect("/securia/dashboard.jsp");
                 Log.log.info("Login successful for user: " + username);
             }else{
                 // If the user is not valid, redirect to the login page

@@ -47,6 +47,15 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../../Escritorio/jar_files/json-20210307.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../../Escritorio/apache-log4j-2.17.1-bin/log4j-api-2.17.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -56,7 +65,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Escritorio/jar_files/json-20210307.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../../Escritorio/apache-log4j-2.17.1-bin/log4j-core-2.17.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

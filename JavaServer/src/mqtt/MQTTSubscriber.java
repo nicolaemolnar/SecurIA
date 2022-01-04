@@ -4,17 +4,25 @@ import database.DBConnection;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class MQTTSubscriber implements MqttCallback {
 
-    public void searchTopicsToSubscribe() {
+    public void searchTopicsToSubscribe(MQTTBroker mqttBroker) {
         DBConnection dbConnection = new DBConnection("postgres","123456");
         ArrayList<String> topics = new ArrayList<>();
         try {
             dbConnection.obtainConnection();
+            ResultSet rsSensores = dbConnection.GetSensors();
+            while (rsSensores.next()){
+                topics.add("Sensor" + rsSensores.getInt("Type")+"/#");
+            }
+            subscribeTopics(mqttBroker, topics);
+
 
             // TODO: Subscribe to all the topics the server needs
+            // Topics ejemplo: "sensor/movement/1", "sensor/presence/1"
 
         }catch (Exception e){
             e.printStackTrace();
@@ -49,7 +57,19 @@ public class MQTTSubscriber implements MqttCallback {
     public void messageArrived(String s, MqttMessage mqttMessage) throws Exception {
         String[] topics = s.split("/");
 
+        String topic = topics[1];
+
         // TODO: Handle the message arrival and treat data accordingly
+        switch (topic){
+            case "movement":
+                int measurement = Integer.parseInt(mqttMessage.getPayload().toString());
+                int sensor_id = Integer.parseInt(topics[2]);
+                // TODO: Save the measurement in the database
+                break;
+            default:
+                break;
+
+        }
     }
 
     @Override

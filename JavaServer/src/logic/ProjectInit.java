@@ -14,7 +14,7 @@ public class ProjectInit implements ServletContextListener {
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // init the project
         Log.log.info("Initializing the server...");
-        MQTTBroker mqttBroker = new MQTTBroker(2, "localhost", 1883, "SecurIA Central Broker");
+        MQTTBroker mqttBroker = new MQTTBroker("SecurIA Central Broker", "25.62.36.206", 5555, 2);
         Log.log.info("MQTT Broker created");
         MQTTSubscriber mqttSub = new MQTTSubscriber();
         Log.log.info("MQTT Subscriber created");
