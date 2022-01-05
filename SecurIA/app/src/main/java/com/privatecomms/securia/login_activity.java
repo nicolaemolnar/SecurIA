@@ -20,7 +20,9 @@ import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.*;
+
+import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,7 +40,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class login_activity extends Activity {
 
-    private TextView btnregister;
+    private TextView btnregister,textViewError;
     private Button btnlogin;
     private EditText emailAddress, password;
     String e,p;
@@ -65,6 +67,7 @@ public class login_activity extends Activity {
 
         this.btnlogin = this.findViewById(R.id.btnlogin);
         this.btnregister = this.findViewById(R.id.btnregister);
+        this.textViewError = this.findViewById(R.id.textViewError);
 
         emailAddress = this.findViewById(R.id.inputEmailAddress);
         password = this.findViewById(R.id.inputPassword);
@@ -114,22 +117,17 @@ public class login_activity extends Activity {
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
         
         @Override
-        protected JSONObject doInBackground(String... urls) {
+        protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
             JSONObject output = null;
             for (String url : urls) {
                 String json_string = getOutputFromUrl(url);
-                JSONParser parser = new JSONParser();
-                try {
-                    output = (JSONObject) parser.parse(json_string);
-                }
-                catch(Exception e){
-
-                }
+                Gson gson = new Gson();
+                output = gson.fromJson(json_string,JSONObject.class);
             }
             return output;
         }
 
-        private String getOutputFromUrl(String url) {
+        private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
             StringBuffer output = new StringBuffer("");
             try {
                 InputStream stream = getHttpConnection(url);
@@ -141,7 +139,7 @@ public class login_activity extends Activity {
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            return output.toString();
+            return String.valueOf(output);
         }
 
         // Makes HttpURLConnection and returns InputStream
@@ -164,19 +162,24 @@ public class login_activity extends Activity {
             }
             return stream;
         }
-/**
-        @Override
-        protected void onPostExecute(JSONObject output) {
-            Intent redirect_normal = new Intent(login_activity.this, normal_user.class);
-            String type = output.get("type").toString();
-            if(type.equals("normal"))
-                startActivity(redirect_normal);
-            else if(type.equals("NULL"))
-                user.setText("LOGIN FAILED");
-            else if(type.equals("admin"))
-                user.setText("NOT NORMAL");
 
-        }**/
+        @Override
+        protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
+            try {
+                if(output.getBoolean("successful_login")){
+                    Intent main = new Intent(getApplicationContext(),MainActivity.class);
+                    main.putExtra("email",emailAddress.getText());
+                    startActivity(main);
+                }else{
+                    textViewError.setText("Email or Password are incorrect, try again.");
+                }
+
+            } catch (JSONException jsonException) {
+                jsonException.printStackTrace();
+            }
+
+
+        }
     }
 }
 
