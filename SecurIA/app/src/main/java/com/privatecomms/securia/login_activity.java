@@ -78,7 +78,7 @@ public class login_activity extends Activity {
                 e = emailAddress.getText().toString();
                 p = password.getText().toString();
 
-                String urlLoginServlet = "http://25.62.36.206:8080/JavaServer/doLogin?username=" + e  + "&password=" + p;
+                String urlLoginServlet = "http://25.62.36.206:8080/securia/doLogin?username=" + e  + "&password=" + p;
                 GetXMLTask task = new GetXMLTask();
                 task.execute(new String[] { urlLoginServlet });
 

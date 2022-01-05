@@ -48,7 +48,7 @@ public class config_activity extends Activity {
         stateSwitch3 = preferences.getBoolean("lifeStream",false);
         stateSwitch4 = preferences.getBoolean("captureVideos",false);
 
-        sendNotifications = this.findViewById(R.id.sendNotifications);
+        //sendNotifications = this.findViewById(R.id.sendNotifications);
         captureFotos = this.findViewById(R.id.captureFotos);
         lifeStream = this.findViewById(R.id.lifeStream);
         captureVideos = this.findViewById(R.id.captureVideos);
