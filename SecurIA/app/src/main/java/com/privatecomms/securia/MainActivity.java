@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 public class MainActivity extends AppCompatActivity {
+    /**
 
     private Button btnConfig, btnExit;
     SwitchCompat stream;
@@ -26,13 +27,15 @@ public class MainActivity extends AppCompatActivity {
     private static conexionBD con=new conexionBD();
     //atributos y sincronizacion
     Atributos_Usuario atrib=Atributos_Usuario.getInstance();
-    //bundle para rrecbir los datos del login
-    Bundle datos = this.getIntent().getExtras();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+
+        //bundle para recbir los datos del login
+        Bundle datos = this.getIntent().getExtras();
 
         //Init de botones
         this.btnConfig = this.findViewById(R.id.btnConfig);
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         //switch de stream
         preferences = getSharedPreferences("PREFS",0);
         stateStream = preferences.getBoolean("stream",false);
-        this.stream = this.findViewById(R.id.stream);
+        //this.stream = this.findViewById(R.id.stream);
 
         //le paso los datos del usuario del inicio de sesion del login
         String email = datos.getString("email");
@@ -116,6 +119,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-    }
+    }**/
 
 }
