@@ -9,16 +9,17 @@
             <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="dashboard.html" class="nav-link px-2">Dashboard</a></li>
-                <li><a href="gallery.html" class="nav-link px-2 text-secondary">Gallery</a></li>
-                <li><a href="streaming.html" class="nav-link px-2">Streaming</a></li>
-                <li><a href="contact.html" class="nav-link px-2">Contact us</a></li>
-                <li><a href="about.html" class="nav-link px-2">About us</a></li>
-                <li><a href="settings.html" class="nav-link px-2">Settings</a></li>
+                <li><a href="dashboard.jsp" class="nav-link px-2">Dashboard</a></li>
+                <li><a href="gallery.jsp" class="nav-link px-2 text-secondary">Gallery</a></li>
+                <li><a href="streaming.jsp" class="nav-link px-2">Streaming</a></li>
+                <li><a href="contact.jsp" class="nav-link px-2">Contact us</a></li>
+                <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
+                <li><a href="get_settings" class="nav-link px-2">Settings</a></li>
             </ul>
     
             <div class="text-end">
-              <a href="index.html"><button type="button" class="btn btn-outline-light me-2">Log out</button></a>
+              <%= String.valueOf(session.getAttribute("email")).split("@")[0] %>
+              <button type="button" onclick="location.href='logout'" class="btn btn-outline-light me-2">Log out</button>
                             <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
             </div>
           </div>
@@ -68,41 +69,29 @@
       </div>
     </div>
     <div class="d-grid my-lg-4 justify-content-center">
-      <div class="d-flex">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-      </div>
+      <%
+        int rows = 20;
+        int cols = 6;
 
-      <div class="d-flex">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-      </div>
+        for (int i = 0; i < rows; i++) {
+          out.println("<div class=\"d-flex\">");
+          for (int j = 0; j < cols; j++) {
+              out.println("<input type=\"image\" src=\"Avatar.jpg\" class=\"border-card\" onclick=\"\" style=\"width: 200px;height: 200px;\">");
+          }
+          out.println("</div>");
+        }
+      %>
 
-      <div class="d-flex">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
-      </div>
-
-      <div class="d-flex">
-        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
+      <!-- 
+      <div class="d-flex"> Fila 
+        <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;"> Columna 0 
         <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
         <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
         <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
         <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
         <input type="image" src="Avatar.jpg" class="border-card" onclick="" style="width: 200px;height: 200px;">
       </div>
+      -->
     </div>
   </div>
 

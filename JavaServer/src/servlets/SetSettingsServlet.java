@@ -33,7 +33,6 @@ public class SetSettingsServlet extends HttpServlet {
         Boolean canStream = Boolean.valueOf(request.getParameter("canStream"));
 
         if (password.equals(password_conf)) {
-
             try {
                 DBConnection db = new DBConnection("postgres","123456");
                 db.obtainConnection();

@@ -8,8 +8,8 @@
           <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
                     
           <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            <li><a href="contact.html" class="nav-link px-2">Contact us</a></li>
-            <li><a href="about.html" class="nav-link px-2">About us</a></li>
+            <li><a href="contact.jsp" class="nav-link px-2">Contact us</a></li>
+            <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
         </ul>
         <div class="text-end">
           <a href="register.html"><button type="button" class="btn btn-outline-light btn-warning">Sign-up</button></a>
@@ -35,7 +35,7 @@
                 <div class="col-md-6 col-lg-7 d-flex align-items-center">
                   <div class="card-body p-4 p-lg-5 text-black">
     
-                    <form>
+                    <form action="login" method="post">
     
                       <div class="d-flex align-items-center mb-3 pb-1">
                         <i class="fas fa-cubes fa-2x me-3" style="color: #ff6219;"></i>
@@ -46,16 +46,16 @@
     
                       <div class="form-outline mb-4">
                         <label class="form-label" for="form2Example17">Email address</label>
-                        <input type="email" id="form2Example17" required class="form-control form-control-lg" required=True />
+                        <input type="email" id="email" name="email" required class="form-control form-control-lg" required=True />
                       </div>
     
                       <div class="form-outline mb-4">
                         <label class="form-label" for="form2Example27">Password</label>
-                        <input type="password" id="form2Example27" required class="form-control form-control-lg" required=True />
+                        <input type="password" id="password" name="password" required class="form-control form-control-lg" required=True />
                       </div>
 
                       <div class="pt-1 mb-4">
-                        <a href="dashboard.html"><button class="btn btn-primary btn-outline-dark text-white btn-lg btn-block" type="button">Login</button></a>
+                        <button class="btn btn-primary btn-outline-dark text-white btn-lg btn-block" type="submit">Login</button>
                       </div>
     
                       <a class="small text-muted" href="#!">Forgot password?</a>

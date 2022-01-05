@@ -9,16 +9,30 @@
             <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
                 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="dashboard.html" class="nav-link px-2">Dashboard</a></li>
-                <li><a href="gallery.html" class="nav-link px-2">Gallery</a></li>
-                <li><a href="streaming.html" class="nav-link px-2">Streaming</a></li>
-                <li><a href="contact.html" class="nav-link px-2">Contact us</a></li>
-                <li><a href="about.html" class="nav-link px-2">About us</a></li>
-                <li><a href="settings.html" class="nav-link px-2 text-secondary">Settings</a></li>
+                <li><a href="dashboard.jsp" class="nav-link px-2">Dashboard</a></li>
+                <li><a href="gallery.jsp" class="nav-link px-2">Gallery</a></li>
+                <li><a href="streaming.jsp" class="nav-link px-2">Streaming</a></li>
+                <li><a href="contact.jsp" class="nav-link px-2">Contact us</a></li>
+                <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
+                <li><a href="get_settings" class="nav-link px-2 text-secondary">Settings</a></li>
             </ul>
-    
+
+            <script type="text/javascript" language="javaScript">
+              function confirmDeletion(){
+                if(confirm("Are you sure you want to delete this user?")){
+                  document.getElementById("deleteForm").submit();
+                }
+              }
+            </script>
+
             <div class="text-end">
-              <a href="index.html"><button type="button" class="btn btn-outline-light me-2">Log out</button></a>
+              <form action="delete_account" method="post" id="deleteForm">
+                <% String username = String.valueOf(session.getAttribute("email")).split("@")[0];
+                  out.println("<input type='hidden' name='email' value='" + session.getAttribute("email") + "'>");
+                  out.println("<button type='button' onclick='confirmDeletion()' class='btn btn-outline-light bg-danger me-2'>Delete "+username+"</button>");
+                %>
+                <button type="button" onclick="location.href='logout'" class="btn btn-outline-light me-2">Log out</button>
+              </form>
                             <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
             </div>
           </div>
@@ -26,49 +40,48 @@
       </header>
 </head>
 <body>
-    
   <div class="container rounded-3 py-2 mt-5" style="border: 1px solid;">
     <div class="content">
         <div class="container">
             <div class="row align-items-stretch no-gutters">
                 <div class="form h-100">
                     <span class="h3 ">User Settings</span>
-                    <form class="mb-5" method="post" id="settingsForm" name="settingsForm">
+                    <form class="mb-5" method="post" action="set_settings" id="settingsForm" name="settingsForm">
                       <div class="bg-light rounded-3">
                         <div class="row mt-3 mx-3">
                             <div class="form-group mb-3">
                                 <label for="" class="col-form-label ">Email </label>
-                                <input type="text" class="form-control" name="email" required=True did="email" placeholder="example@email.com">
+                                <% out.println("<input type='email' required class='form-control' name='email' value='" + session.getAttribute("email") + "' placeholder='example@email.com'>"); %>
                             </div>
                         </div>
                         <div class="row mx-3">
                             <div class="col-md-6 form-group mb-3">
                                 <label for="" class="col-form-label ">Password</label>
-                                <input type="text" class="form-control" name="password" id="password" placeholder="Your password">
+                                <% out.println("<input type='text' required class='form-control' name='password' value='"+session.getAttribute("password")+"' placeholder='Your password'>"); %>
                             </div>
                             <div class="col-md-6 form-group mb-3">
                                 <label for="" class="col-form-label ">Confirm password</label>
-                                <input type="text" class="form-control" name="password_conf" id="password_conf" placeholder="Repeat password">
+                                <% out.println("<input type='text' required class='form-control' name='password_conf' value='"+session.getAttribute("password")+"' placeholder='Confirm your password'>"); %>
                             </div>
                         </div>
                         <div class="row mx-3">
                           <div class="col-md-6 form-group mb-3">
                               <label for="firstname" class="col-form-label ">First Name</label>
-                              <input type="text" class="form-control" name="firstname" id="firstname" placeholder="First Name">
+                              <% out.println("<input type='text' required class='form-control' name='firstname' value='"+session.getAttribute("firstname")+"' placeholder='Your first name'>"); %>
                           </div>
                           <div class="col-md-6 form-group mb-3">
                               <label for="surname" class="col-form-label ">Surname</label>
-                              <input type="text" class="form-control" name="surname" id="surname" placeholder="Surname">
+                              <% out.println("<input type='text' required class='form-control' name='surname' value='"+session.getAttribute("surname")+"' placeholder='Your surname'>"); %>
                           </div>
                       </div>
                       <div class="row mx-3 ">
                         <div class="col-md-6 form-group mb-3">
                             <label for="phone" class="col-form-label ">Phone number</label>
-                            <input type="text" class="form-control" name="phone" id="phone" placeholder="(+34) 000 000 000">
+                            <% out.println("<input type='`phone' required class='form-control' name='phone' value='"+session.getAttribute("phone")+"' placeholder='(+34) 000 000 000'>"); %>
                         </div>
                         <div class="col-md-6 form-group mb-3">
                             <label for="birthdate" class="col-form-label ">Birth date</label>
-                            <input type="date" class="form-control" name="birthdate" id="birthdate">
+                            <% out.println("<input type='date' class='form-control' name='birthdate' value='"+session.getAttribute("birthdate")+"' placeholder='dd/mm/yyyy'>"); %>
                         </div>
                     </div>
                   </div>
@@ -79,15 +92,15 @@
                         <div class="row mx-3">
                           <div class="col-md-5 form-group mb-3">
                             <label for="getPhotos" class="">Capture photos</label>
-                            <input type="checkbox" name="getPhotos">
+                            <% out.println("<input type='checkbox' name='getPhotos' "+ ((String.valueOf(session.getAttribute("getPhotos")) == "true")? "checked":"") +">"); %>
                           </div>
                           <div class="col-md-5 form-group mb-3">
                             <label for="getVideos" class="">Capture videos</label>
-                            <input type="checkbox" name="getVideos">
+                            <% out.println("<input type='checkbox' name='getVideos' "+ ((String.valueOf(session.getAttribute("getVideos"))=="true")? "checked":"") +">"); %>
                           </div>
                           <div class="col-md-2 form-group mb-3">
                             <label for="canStream" class="">Live Streaming</label>
-                            <input type="checkbox" name="canStream">
+                            <% out.println("<input type='checkbox' name='canStream' "+ ((String.valueOf(session.getAttribute("canStream"))=="true")? "checked":"") +">"); %>
                           </div>
                         </div>
                       </div>  

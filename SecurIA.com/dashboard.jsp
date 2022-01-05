@@ -14,16 +14,16 @@
                 
                 <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
               
-                <a href="dashboard.html" class="rounded text-center my-2">Dashboard</a>
-                <a href="gallery.html" class="rounded text-center my-2">Gallery</a>
-                <a href="streaming.html" class="rounded text-center my-2">Streaming</a>
-                <a href="contact.html" class="rounded text-center my-2">Contact us</a>
-                <a href="about.html" class="rounded text-center my-2">About us</a>
-                <a href="settings.html" class="rounder text-center my-2">Settings</a>
+                <a href="dashboard.jsp" class="rounded text-center my-2">Dashboard</a>
+                <a href="gallery.jsp" class="rounded text-center my-2">Gallery</a>
+                <a href="streaming.jsp" class="rounded text-center my-2">Streaming</a>
+                <a href="contact.jsp" class="rounded text-center my-2">Contact us</a>
+                <a href="about.jsp" class="rounded text-center my-2">About us</a>
+                <a href="get_settings" class="rounder text-center my-2">Settings</a>
         
                 <div class="text-end mt-lg-5">
-                  <a href="index.html"><button type="button" class="btn btn-outline-light me-2">Log out</button></a>
-                                <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
+                  <button type="button" onclick="location.href='logout'" class="btn btn-outline-light me-2">Log out</button>
+                  <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
                 </div>
               </div>
             </div>

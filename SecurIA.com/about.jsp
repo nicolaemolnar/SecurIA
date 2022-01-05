@@ -1,3 +1,4 @@
+<% Object email = session.getAttribute("email"); %>
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -9,17 +10,30 @@
             <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="dashboard.html" class="nav-link px-2">Dashboard</a></li>
-                <li><a href="gallery.html" class="nav-link px-2">Gallery</a></li>
-                <li><a href="streaming.html" class="nav-link px-2">Streaming</a></li>
-                <li><a href="contact.html" class="nav-link px-2">Contact us</a></li>
-                <li><a href="about.html" class="nav-link px-2 text-secondary">About us</a></li>
-                <li><a href="settings.html" class="nav-link px-2">Settings</a></li>
-            </ul>
-    
-            <div class="text-end">
-              <a href="index.html"><button type="button" class="btn btn-outline-light me-2">Log out</button></a>
-                            <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
+              <% if (email != null) { 
+                  out.println("<li><a href=\"dashboard.jsp\" class=\"nav-link px-2\">Dashboard</a></li>");
+                  out.println("<li><a href=\"gallery.jsp\" class=\"nav-link px-2\">Gallery</a></li>");
+                  out.println("<li><a href=\"streamin.jsp\" class=\"nav-link px-2\">Streaming</a></li>");
+              }
+              %>
+              <li><a href="contact.jsp" class="nav-link px-2">Contact us</a></li>
+              <li><a href="about.jsp" class="nav-link px-2 text-secondary">About us</a></li>
+              <% if (email != null) { out.println("<li><a href=\"get_settings\" class=\"nav-link px-2\">Settings</a></li>"); } %>
+          </ul>
+  
+          <div class="text-end">
+              <% 
+             
+              if(email != null) {
+                out.println(String.valueOf(session.getAttribute("email")).split("@")[0]);
+                out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='logout'\">Log out</button>");
+              } else {
+                out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='index.html'\">Log In</button>");
+                out.println("<button type=\"button\" class=\"btn btn-outline-light btn-warning\" onclick=\"location.href='register.html'\">Sign-up</button>");
+              }
+              %>
+              
+            <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
             </div>
           </div>
         </div>
@@ -112,7 +126,7 @@
   
         <!-- Team item-->
         <div class="col-xl-3 col-sm-6 mb-5 w-20 h-100">
-          <div class="bg-white rounded shadow-sm py-5 px-4"><img src="/Images/Alex_cut.jpg" alt="" width="100" class="img-fluid rounded-circle mb-3 img-thumbnail-about shadow-sm">
+          <div class="bg-white rounded shadow-sm py-5 px-4"><img src="/securia/Images/Alex_cut.jpg" alt="" width="100" class="img-fluid rounded-circle mb-3 img-thumbnail-about shadow-sm">
             <h4 class="mb-0">Nicolae Alexandru Molnar</h4><span class="small text-uppercase text-muted">CEO - Founder</span>
             <ul class="social mb-0 list-inline mt-3">
               <li class="list-inline-item"><a href="#" class="social-link"><i class="fa fa-facebook-f"></i></a></li>

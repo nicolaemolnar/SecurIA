@@ -1,3 +1,4 @@
+<%  Object email = session.getAttribute("email"); %>
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -10,13 +11,30 @@
             <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="contact_anonym.html" class="nav-link px-2 text-secondary">Contact us</a></li>
-                <li><a href="about_anonym.html" class="nav-link px-2">About us</a></li>
+                <% if (email != null) { 
+                    out.println("<li><a href=\"dashboard.jsp\" class=\"nav-link px-2\">Dashboard</a></li>");
+                    out.println("<li><a href=\"gallery.jsp\" class=\"nav-link px-2\">Gallery</a></li>");
+                    out.println("<li><a href=\"streaming.jsp\" class=\"nav-link px-2\">Streaming</a></li>");
+                }
+                %>
+                <li><a href="contact.jsp" class="nav-link px-2 text-secondary">Contact us</a></li>
+                <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
+                <% if (email != null) { out.println("<li><a href=\"get_settings\" class=\"nav-link px-2\">Settings</a></li>"); } %>
             </ul>
     
             <div class="text-end">
-                <a href="index.html"><button type="button" class="btn btn-outline-light me-2">Log In</button></a>
-                <a href="register.html"><button type="button" class="btn btn-outline-light btn-warning">Sign-up</button></a>
+                <% 
+               
+                if(email != null) {
+                    out.println(String.valueOf(session.getAttribute("email")).split("@")[0]); 
+                    out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='logout'\">Log out</button>");
+                } else {
+                    out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='index.html'\">Log In</button>");
+                    out.println("<button type=\"button\" class=\"btn btn-outline-light btn-warning\" onclick=\"location.href='register.html'\">Sign-up</button>");
+                }
+                %>
+                
+              <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
             </div>
           </div>
         </div>
@@ -31,7 +49,7 @@
                         <div class="form h-100">
                             <span class="h3">Contact us</span>
                             <div class="mt-3 bg-light rounded-3">
-                            <form class="mb-3 mx-3" method="post" id="contactForm" name="contactForm">
+                            <form class="mb-3 mx-3" action="request_contact" method="post" id="contactForm" name="contactForm">
                                 <div class="row">
                                     <div class="col-md-6 form-group mb-3">
                                         <label for="" class="col-form-label">Name *</label>

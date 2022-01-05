@@ -9,17 +9,18 @@
             <img class="img-fluid rounded-circle mb-3 img-thumbnail shadow-sm" width="60" role="img" aria-label="Bootstrap" src="logo.jpg" alt="SecurIA">
                         
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                <li><a href="dashboard.html" class="nav-link px-2">Dashboard</a></li>
-                <li><a href="gallery.html" class="nav-link px-2">Gallery</a></li>
-                <li><a href="streaming.html" class="nav-link px-2 text-secondary">Streaming</a></li>
-                <li><a href="contact.html" class="nav-link px-2">Contact us</a></li>
-                <li><a href="about.html" class="nav-link px-2">About us</a></li>
-                <li><a href="settings.html" class="nav-link px-2">Settings</a></li>
+                <li><a href="dashboard.jsp" class="nav-link px-2">Dashboard</a></li>
+                <li><a href="gallery.jsp" class="nav-link px-2">Gallery</a></li>
+                <li><a href="streaming.jsp" class="nav-link px-2 text-secondary">Streaming</a></li>
+                <li><a href="contact.jsp" class="nav-link px-2">Contact us</a></li>
+                <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
+                <li><a href="get_settings" class="nav-link px-2">Settings</a></li>
             </ul>
     
             <div class="text-end">
-                <a href="index.html"><button type="button" class="btn btn-outline-light me-2">Log out</button></a>
-                              <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
+                <%= String.valueOf(session.getAttribute("email")).split("@")[0] %>
+                <button type="button" onclick="location.href='logout'" class="btn btn-outline-light me-2">Log out</button>
+                <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
             </div>
           </div>
         </div>
@@ -45,7 +46,7 @@
         </div>
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="border-primary border-2">
-                <iframe class="rounded-bottom" style="height: 600px;width: 1115px;" src="Introduccion.mp4"></iframe>
+                <iframe class="rounded-bottom" style="height: 600px;width: 1115px;" src="streaming"></iframe>
             </div>
         </div>
     </div>
