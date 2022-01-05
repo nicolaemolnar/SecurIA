@@ -274,4 +274,63 @@ public class DBConnection {
         //Return the HashMap
         return settings;
     }
+
+    public boolean setSettings(String prev_email, String email, String password, String firstname, String surname, String phone, String birthdate, Boolean getPhotos, Boolean getVideos, Boolean canStream){
+        // Prepare SQL call
+        Statement csmt = null;
+        boolean success = false;
+
+        // Set the settings in the database
+        try {
+            // Begin transaction
+            csmt = connection.createStatement();
+            beginTransaction(csmt);
+
+            // Check if the email is the same or the new email is not in use
+            ResultSet res = csmt.executeQuery("SELECT email FROM public.user;");
+            while (res.next()) {
+                if (res.getString("email").equals(email) && !email.equals(prev_email)) {
+                    cancelTransaction(csmt);
+                    Log.logdb.error("Error updating settings. Email already in use.");
+                    return false;
+                }
+            }
+
+            // Update user information
+            String query = "UPDATE public.user SET email='"+email+
+                            "', password='"+password+
+                            "', first_name='"+firstname+
+                            "', surname='"+surname+
+                            "', phone_number='"+phone+
+                            "', birth_date='"+birthdate+
+                            "' WHERE email='"+email+"';";
+            csmt.execute(query);
+
+            // Obtain system_id
+            res = csmt.executeQuery("SELECT * FROM public.configurations where email='"+email+"';");
+            int system_id = -1;
+            if (res.next()) {
+                system_id = res.getInt("system_id");
+            }
+
+            // Update system information
+            String query2 = "UPDATE public.system SET capture_photos="+getPhotos+
+                    ", capture_videos="+getVideos+
+                    ", live_streaming="+canStream+
+                    " WHERE system_id='"+system_id+"';";
+            csmt.execute(query2);
+
+            // Commit transaction
+            closeTransaction(csmt);
+            csmt.close();
+            Log.logdb.info("Updated user with email "+prev_email+" from connection "+csmt.getConnection());
+            success = true;
+        }catch (SQLException e) {
+            cancelTransaction(csmt);
+            Log.logdb.error("Error setting settings for user with email "+prev_email+"."+e.getMessage());
+        }
+
+        // Return true if successful, false if not
+        return success;
+    }
 }

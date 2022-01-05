@@ -1,6 +1,5 @@
 package servlets;
 
-import database.DBConnection;
 import logic.Log;
 import logic.Logic;
 import org.jetbrains.annotations.NotNull;
