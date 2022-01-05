@@ -31,7 +31,7 @@ public class ContactServlet extends HttpServlet {
 
         boolean validContact =false;
 
-        // TODO Connect to database
+        // Connect to database
         DBConnection db = new DBConnection("postgres","123456");
         try {
             db.obtainConnection();
@@ -39,12 +39,12 @@ public class ContactServlet extends HttpServlet {
             response.sendRedirect("/securia/error.jsp?error=database");
         }
 
-        // TODO Insert contact into database
+        // Insert contact into database
         if (db.isConnected()) {
             validContact = db.insertContact(name,email,phone,company,message);
         }
 
-        // TODO Redirect to confirmation page if successful
+        // Redirect to confirmation page if successful
         if (validContact){
             response.sendRedirect("/securia/confirmationPage"); // Page to confirm insertion
             Log.log.info("Added contact from "+email+" to database");

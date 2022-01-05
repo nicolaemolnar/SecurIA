@@ -1,6 +1,7 @@
 package servlets;
 
 import database.DBConnection;
+import logic.Log;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,13 +19,9 @@ public class GetSettingsServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO: Get settings from database and return json
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // Get settings from database and add them to session
         // Get parameters
-        String email = request.getParameter("email");
+        String email = String.valueOf(request.getSession().getAttribute("email"));
         // Obtain db connection
         DBConnection db = new DBConnection("postgres","123456");
         // Get settings for user with received email
@@ -41,12 +38,15 @@ public class GetSettingsServlet extends HttpServlet {
                     for (String key : settings.keySet()) {
                         session.setAttribute(key, settings.get(key));
                     }
+
                     // Redirect to settings page (.jsp)
                     response.sendRedirect("/securia/settings.jsp");
+                    Log.log.info("Settings obtained successfully for user with email: " + email);
                 }
                 else{
                     // If user was not inserted successfully, redirect to error page
                     response.sendRedirect("/securia/error.jsp?error=settings");
+                    Log.log.error("The user with email: " + email + " is not related to any settings");
                 }
             }
             // Close the connection to the database
@@ -54,6 +54,11 @@ public class GetSettingsServlet extends HttpServlet {
 
         }catch (Exception e){
             response.sendRedirect("/securia/error.jsp?error=database");
+            Log.log.error("Could not obtain settings for user with email: " + email+". Error: " + e.getMessage());
         }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doGet(request, response);
     }
 }

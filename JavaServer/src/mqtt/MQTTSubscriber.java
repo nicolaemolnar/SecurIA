@@ -6,6 +6,7 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MQTTSubscriber implements MqttCallback {
 
@@ -14,9 +15,9 @@ public class MQTTSubscriber implements MqttCallback {
         ArrayList<String> topics = new ArrayList<>();
         try {
             dbConnection.obtainConnection();
-            ResultSet rsSensores = dbConnection.GetSensors();
-            while (rsSensores.next()){
-                topics.add("Sensor" + rsSensores.getInt("Type")+"/#");
+            HashMap<String,Integer> sensores = dbConnection.GetSensors();
+            for (String sensor : sensores.keySet()) {
+                topics.add("/sensor/"+sensor+"/"+sensores.get(sensor));
             }
             subscribeTopics(mqttBroker, topics);
 

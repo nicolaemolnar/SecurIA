@@ -1,17 +1,17 @@
 ﻿/*
 Created: 26/11/2021
-Modified: 26/11/2021
+Modified: 05/01/2022
 Model: PostgreSQL 11
 Database: PostgreSQL 11
 */
 
 -- Create tables section -------------------------------------------------
 
--- Table User
+-- Table user
 
-CREATE TABLE "User"
+CREATE TABLE "user"
 (
-  "email" Character varying NOT NULL,
+  "email" Character varying(100) NOT NULL,
   "password" Character varying NOT NULL,
   "first_name" Character varying NOT NULL,
   "surname" Character varying,
@@ -22,15 +22,15 @@ WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "User" ADD CONSTRAINT "PK_User" PRIMARY KEY ("email")
+ALTER TABLE "user" ADD CONSTRAINT "PK_user" PRIMARY KEY ("email")
 ;
 
--- Table System
+-- Table system
 
-CREATE TABLE "System"
+CREATE TABLE "system"
 (
   "system_id" Bigint NOT NULL,
-  "capture_fotos" Boolean NOT NULL,
+  "capture_photos" Boolean NOT NULL,
   "capture_videos" Boolean NOT NULL,
   "live_streaming" Boolean NOT NULL
 )
@@ -38,26 +38,26 @@ WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "System" ADD CONSTRAINT "PK_System" PRIMARY KEY ("system_id")
+ALTER TABLE "system" ADD CONSTRAINT "PK_system" PRIMARY KEY ("system_id")
 ;
 
--- Table Configurations
+-- Table configurations
 
-CREATE TABLE "Configurations"
+CREATE TABLE "configurations"
 (
-  "email" Character varying(20) NOT NULL,
+  "email" Character varying(100) NOT NULL,
   "system_id" Bigint NOT NULL
 )
 WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "Configurations" ADD CONSTRAINT "PK_Configurations" PRIMARY KEY ("email","system_id")
+ALTER TABLE "configurations" ADD CONSTRAINT "PK_configurations" PRIMARY KEY ("email","system_id")
 ;
 
--- Table Alert
+-- Table alert
 
-CREATE TABLE "Alert"
+CREATE TABLE "alert"
 (
   "id" Bigint NOT NULL,
   "title" Character varying NOT NULL,
@@ -67,12 +67,12 @@ WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "Alert" ADD CONSTRAINT "PK_Alert" PRIMARY KEY ("id")
+ALTER TABLE "alert" ADD CONSTRAINT "PK_alert" PRIMARY KEY ("id")
 ;
 
--- Table Sensor_type
+-- Table sensor_type
 
-CREATE TABLE "Sensor_type"
+CREATE TABLE "sensor_type"
 (
   "type" Bigint NOT NULL,
   "name" Character varying NOT NULL,
@@ -87,12 +87,12 @@ WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "Sensor_type" ADD CONSTRAINT "PK_Sensor_type" PRIMARY KEY ("type")
+ALTER TABLE "sensor_type" ADD CONSTRAINT "PK_sensor_type" PRIMARY KEY ("type")
 ;
 
--- Table Camera
+-- Table camera
 
-CREATE TABLE "Camera"
+CREATE TABLE "camera"
 (
   "camera_id" Bigint NOT NULL,
   "name" Character varying NOT NULL,
@@ -103,7 +103,7 @@ WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "Camera" ADD CONSTRAINT "PK_Camera" PRIMARY KEY ("camera_id","system_id")
+ALTER TABLE "camera" ADD CONSTRAINT "PK_camera" PRIMARY KEY ("camera_id","system_id")
 ;
 
 -- Table camera_event
@@ -140,87 +140,131 @@ ALTER TABLE "sensor_event" ADD CONSTRAINT "PK_sensor_event" PRIMARY KEY ("type",
 CREATE TABLE "allow_notifications"
 (
   "system_id" Bigint NOT NULL,
-  "id" Bigint NOT NULL,
+  "alert_id" Bigint NOT NULL,
   "enabled" Boolean NOT NULL
 )
 WITH (
   autovacuum_enabled=true)
 ;
 
-ALTER TABLE "allow_notifications" ADD CONSTRAINT "PK_allow_notifications" PRIMARY KEY ("system_id","id")
+ALTER TABLE "allow_notifications" ADD CONSTRAINT "PK_allow_notifications" PRIMARY KEY ("system_id","alert_id")
+;
+
+-- Table contact_request
+
+CREATE TABLE "contact_request"
+(
+  "request_id" Bigint NOT NULL,
+  "name" Character varying NOT NULL,
+  "email" Character varying(100) NOT NULL,
+  "phone_number" Character varying,
+  "company_name" Character varying,
+  "message" Text NOT NULL
+)
+WITH (
+  autovacuum_enabled=true)
+;
+
+ALTER TABLE "contact_request" ADD CONSTRAINT "PK_contact_request" PRIMARY KEY ("request_id")
+;
+
+-- Table image
+
+CREATE TABLE "image"
+(
+  "encrypted_img" Text NOT NULL,
+  "timestamp" Timestamp NOT NULL,
+  "label" Text NOT NULL,
+  "camera_id" Bigint NOT NULL,
+  "system_id" Bigint NOT NULL,
+  "image_id" Bigint NOT NULL
+)
+WITH (
+  autovacuum_enabled=true)
+;
+
+ALTER TABLE "image" ADD CONSTRAINT "PK_image" PRIMARY KEY ("camera_id","system_id","image_id")
 ;
 
 -- Create foreign keys (relationships) section -------------------------------------------------
 
-ALTER TABLE "Configurations"
+ALTER TABLE "configurations"
   ADD CONSTRAINT "user_conf"
     FOREIGN KEY ("email")
-    REFERENCES "User" ("email")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "user" ("email")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
-ALTER TABLE "Configurations"
+ALTER TABLE "configurations"
   ADD CONSTRAINT "system_conf"
     FOREIGN KEY ("system_id")
-    REFERENCES "System" ("system_id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "system" ("system_id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
-ALTER TABLE "Camera"
+ALTER TABLE "camera"
   ADD CONSTRAINT "hasCamera"
     FOREIGN KEY ("system_id")
-    REFERENCES "System" ("system_id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "system" ("system_id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
 ALTER TABLE "camera_event"
   ADD CONSTRAINT "is_alerted"
     FOREIGN KEY ("id")
-    REFERENCES "Alert" ("id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "alert" ("id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
 ALTER TABLE "camera_event"
   ADD CONSTRAINT "alerts"
     FOREIGN KEY ("camera_id", "system_id")
-    REFERENCES "Camera" ("camera_id", "system_id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "camera" ("camera_id", "system_id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
 ALTER TABLE "sensor_event"
   ADD CONSTRAINT "alerts"
     FOREIGN KEY ("type")
-    REFERENCES "Sensor_type" ("type")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "sensor_type" ("type")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
 ALTER TABLE "sensor_event"
   ADD CONSTRAINT "is_alerted"
     FOREIGN KEY ("id")
-    REFERENCES "Alert" ("id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "alert" ("id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
 ALTER TABLE "allow_notifications"
   ADD CONSTRAINT "recieves"
     FOREIGN KEY ("system_id")
-    REFERENCES "System" ("system_id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    REFERENCES "system" ("system_id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 
 ALTER TABLE "allow_notifications"
   ADD CONSTRAINT "notificates"
-    FOREIGN KEY ("id")
-    REFERENCES "Alert" ("id")
-      ON DELETE NO ACTION
-      ON UPDATE NO ACTION
+    FOREIGN KEY ("alert_id")
+    REFERENCES "alert" ("id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
+;
+
+ALTER TABLE "image"
+  ADD CONSTRAINT "records"
+    FOREIGN KEY ("camera_id", "system_id")
+    REFERENCES "camera" ("camera_id", "system_id")
+      ON DELETE CASCADE
+      ON UPDATE CASCADE
 ;
 

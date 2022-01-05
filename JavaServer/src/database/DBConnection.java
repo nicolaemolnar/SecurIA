@@ -95,9 +95,9 @@ public class DBConnection {
         email = email.replace("'", "");
         password = password.replace("'", "");
 
-        // TODO Get the username from the database
+        // Get the username from the database
         // SELECT first_name from cliente where email=? and password=?
-        String query = "SELECT first_name FROM \"Client\" WHERE email = '" + email + "' AND password = '" + password + "';";
+        String query = "SELECT first_name FROM public.user WHERE email = '" + email + "' AND password = '" + password + "';";
         ResultSet rs = csmt.executeQuery(query);
 
         Log.logdb.info("Executed select from connection "+csmt.getConnection());
@@ -110,33 +110,49 @@ public class DBConnection {
         rs.close();
         csmt.close();
 
-        // TODO Return the username if the user exists, null string if not
+        // Return the username if the user exists, null string if not
         return username;
     }
 
     public boolean register(String username, String first_name, String email, String password, String surname, String phone, Date birth_date){
         // Prepare SQL call
         Statement csmt = null;
-        boolean exito = false;
+        boolean success = false;
 
        try {
             // Begin transaction
             csmt = connection.createStatement();
             beginTransaction(csmt);
 
-            // Insert the contact into the contacts table
             // Check if email already exists in database
-            if(!csmt.executeQuery("SELECT FROM \"Client\" WHERE email = '" + email +"'").next()){
-                String query = "INSERT INTO public.\"Client\" ( email, password, first_name, surname, phone_number, birth_date)"+
+            if(!csmt.executeQuery("SELECT FROM public.user WHERE email = '" + email +"'").next()){
+                // Insert new user into database
+                String query = "INSERT INTO public.user (email, password, first_name, surname, phone_number, birth_date)"+
                 "VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone + "', '" + birth_date + "')";
+                csmt.execute(query);
                 Log.logdb.info("Inserted user with email "+email+" into database.");
 
-                // Insert the user into the Clients table
-                csmt.execute(query);  
-                // Commit transaction
-                closeTransaction(csmt);
-                exito = true;
+                // Create a new system configuration for him
+                int next_id = 0;
+                ResultSet rs = csmt.executeQuery("SELECT MAX(system_id) from public.system");
+                if (rs.next()) {
+                    next_id = rs.getInt(1) + 1;
+                }
+
+                String query2 = "INSERT INTO public.system (system_id, capture_photos, capture_videos, live_streaming)" +
+                        "VALUES (" + next_id + ", true, true, true)";
+                csmt.execute(query2);
+                Log.logdb.info("Inserted system configuration with id "+next_id+" into database.");
+
+                String relation = "INSERT INTO public.configurations (email, system_id)"+
+                "VALUES ('" + email + "', '" + next_id + "')";
+                csmt.execute(relation);
+                Log.logdb.info("Inserted relation between user and system configuration into database.");
+
+                success = true;
             }
+           // Commit transaction
+           closeTransaction(csmt);
         }catch (SQLException e) {
             cancelTransaction(csmt);
             Log.logdb.error("Error registering user "+username+"."+e.getMessage());
@@ -144,28 +160,36 @@ public class DBConnection {
 
 
         // Return true if successful, false if not (rollback) or email already exists in the database
-        return exito;
+        return success;
     }
 
     public boolean insertContact(String name, String email, String phone, String company, String message){
-        // TODO Prepare SQL call
-        Statement csmt = null;
+        // Prepare SQL call
+        boolean success = false;
 
-        try {
-            csmt = connection.createStatement();
-        // TODO Begin transaction
-            beginTransaction(csmt);
-        // TODO Insert the contact into the contacts table
-            String query = "INSERT INTO public.Contact(name,email,phone,company,message) VALUES (name,email,phone,company,message);";
+        try (Statement csmt = connection.createStatement()){
+
+            // Obtain last contact id
+            ResultSet rs = csmt.executeQuery("SELECT MAX(request_id) FROM public.contact_request");
+
+            int next_id = 0;
+            if (rs.next()) {
+                next_id = rs.getInt(1) + 1;
+            }
+
+            // Insert the contact into the contacts table
+            String query = "INSERT INTO public.contact_request(request_id,name,email,phone_number,company_name,message) VALUES ("+next_id+",'"+name+"','"+email+"','"+phone+"','"+company+"','"+message+"');";
             csmt.execute(query);  //Donde capturo si no se realiza bien el insert para dev false
             Log.logdb.info("Executed insert from connection "+csmt.getConnection());
-        // TODO Commit transaction
-            closeTransaction(csmt);
+
+            success = true;
         }catch (SQLException e) {
-            cancelTransaction(csmt);
+            success = false;
+            Log.logdb.error("Error inserting contact request from "+email+"."+e.getMessage());
         }
-        // TODO Return true if successful, false if not
-        return true;
+
+        // Return true if successful, false if not
+        return success;
     }
 
     public void delete_account(String email) throws SQLException {
@@ -175,7 +199,7 @@ public class DBConnection {
         csmt = connection.createStatement();
 
         // Delete the account from the database
-        String query = "DELETE FROM \"Client\" WHERE email = '" + email + "';";
+        String query = "DELETE FROM public.user WHERE email = '" + email + "';";
         csmt.execute(query);
 
         Log.logdb.info("Deleted account with email '"+email+" from database. Author:"+csmt.getConnection());
@@ -183,74 +207,71 @@ public class DBConnection {
         csmt.close();
     }
 
-    public ResultSet GetSensors(){
-        Statement csmt = null;
+    public HashMap<String, Integer> GetSensors(){
         ResultSet rs = null;
-        try {
-            csmt = connection.createStatement();
-            beginTransaction(csmt);
-            String query = "SELECT * FROM \"Sensor_type\" ";
+        HashMap<String, Integer> sensors = new HashMap<>();
+        try (Statement csmt = connection.createStatement()) {
+            String query = "SELECT * FROM public.sensor_type; ";
             rs = csmt.executeQuery(query);
             Log.logdb.info("Executed Select from connection "+csmt.getConnection());
-            closeTransaction(csmt);
+
+            while (rs.next()) {
+                sensors.put(rs.getString("name"), rs.getInt("type"));
+            }
         }catch (SQLException e) {
-            cancelTransaction(csmt);
+            Log.logdb.error("Error getting sensors from database."+e.getMessage());
         }
-        return rs;
+        return sensors;
 
     }
 
-    public ResultSet GetCamera(){
-        Statement csmt = null;
+    public ArrayList<String> GetCameras(){
         ResultSet rs = null;
-        try {
-            csmt = connection.createStatement();
-            beginTransaction(csmt);
-            String query = "SELECT * FROM \"Camera\" ";
+        ArrayList<String> cameras = new ArrayList<>();
+        try (Statement csmt = connection.createStatement()) {
+
+            String query = "SELECT * FROM public.camera; ";
             rs = csmt.executeQuery(query);
             Log.logdb.info("Executed Select from connection "+csmt.getConnection());
-            closeTransaction(csmt);
+
+            while (rs.next()) {
+                cameras.add(rs.getString("name"));
+            }
+
         }catch (SQLException e) {
-            cancelTransaction(csmt);
+            Log.logdb.error("Error getting cameras from database."+e.getMessage());
         }
-        //como hago para que devuelva el select?
-        return rs;
+        // como hago para que devuelva el select?
+        return cameras;
     }
 
     public HashMap<String, String> getSettings(String email){
         // Prepare SQL call
-        Statement csmt = null;
         HashMap<String, String> settings = new HashMap<String, String>();
 
         // Get the settings from the database
-        try {
-            // Begin transaction
-            csmt = connection.createStatement();
-            beginTransaction(csmt);
-            ResultSet res = csmt.executeQuery("SELECT * FROM \"Client\" natural join \"Configurations\" natural join \"System\"  " +
-                    "WHERE  email =" + email + ";");
-            //Close statement
-            closeTransaction(csmt);
+        try (Statement csmt = connection.createStatement()) {
+            ResultSet res = csmt.executeQuery("SELECT * FROM public.user natural join public.configurations natural join public.system " +
+                    "WHERE  email ='"+email+"';");
+            Log.logdb.info("Executed Select from connection "+csmt.getConnection());
+
             //Store the settings in the HashMap (Tables: Client natural join Configurations natural join System)
-            settings.put("email", email);
-            settings.put("password", res.getString("password"));
-            settings.put("firstname", res.getString("first_name"));
-            settings.put("surname", res.getString("surname"));
-            settings.put("phone", res.getString("phone_number"));
-            settings.put("birthdate", res.getString("birth_date"));
-            settings.put("getPhotos", String.valueOf(res.getBoolean("capture_photos")));
-            settings.put("getVideos", String.valueOf(res.getBoolean("capture_videos")));
-            settings.put("canStream", String.valueOf(res.getBoolean("live_streaming")));
+            if (res.next()) {
+                settings.put("email", email);
+                settings.put("password", res.getString("password"));
+                settings.put("firstname", res.getString("first_name"));
+                settings.put("surname", res.getString("surname"));
+                settings.put("phone", res.getString("phone_number"));
+                settings.put("birthdate", res.getString("birth_date"));
+                settings.put("getPhotos", String.valueOf(res.getBoolean("capture_photos")));
+                settings.put("getVideos", String.valueOf(res.getBoolean("capture_videos")));
+                settings.put("canStream", String.valueOf(res.getBoolean("live_streaming")));
+            }
         }catch (SQLException e) {
-            cancelTransaction(csmt);
-            Log.logdb.error("Error getting settings from user with email"+email+"."+e.getMessage());
+            Log.logdb.error("Error getting settings from user with email "+email+"."+e.getMessage());
         }
 
         //Return the HashMap
         return settings;
     }
-
-
-
-
 }
