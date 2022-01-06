@@ -13,17 +13,19 @@ public class ProjectInit implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         // init the project
-        /*Log.log.info("Initializing the server...");
-        MQTTBroker mqttBroker = new MQTTBroker("SecurIA Central Broker", "25.62.36.206", 5555, 2);
+        Log.log.info("Initializing the server...");
+        Logic.mqttBroker = new MQTTBroker("SecurIA Central Broker", "localhost", 5555, 2);
         Log.log.info("MQTT Broker created");
-        MQTTSubscriber mqttSub = new MQTTSubscriber();
+        Logic.mqttSubscriber = new MQTTSubscriber(Logic.mqttBroker);
         Log.log.info("MQTT Subscriber created");
-        MQTTPublisher mqttPub = new MQTTPublisher();
+        Logic.mqttSubscriber.searchTopicsToSubscribe();
+        /*MQTTPublisher mqttPub = new MQTTPublisher();
         Log.log.info("MQTT Publisher created");*/
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
+        Logic.mqttSubscriber.disconnectFromBroker();
         Log.log.info("Server service stopped.");
     }
 }

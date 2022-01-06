@@ -22,22 +22,25 @@ INSERT INTO public.user(
 	email, password, first_name, surname, phone_number, birth_date)
 	VALUES ('eduardo.garzo@edu.uah.es', '1234', 'Eduardo', 'Garzo', '997228334', '14/09/2001');
 
+INSERT INTO public.user(
+	email, password, first_name, surname, phone_number, birth_date)
+	VALUES ('admin@securia.com','admin','admin','','',null);
 
 -- Table System ---------------------------------------------------------------
 INSERT INTO public.system(
-	system_id, capture_fotos, capture_videos, live_streaming)
+	system_id, capture_photos, capture_videos, live_streaming)
 	VALUES ('1', 'True', 'True', 'True');
 	
 INSERT INTO public.system(
-	system_id, capture_fotos, capture_videos, live_streaming)
+	system_id, capture_photos, capture_videos, live_streaming)
 	VALUES ('2', 'True', 'True', 'True');
 	
 INSERT INTO public.system(
-	system_id, capture_fotos, capture_videos, live_streaming)
+	system_id, capture_photos, capture_videos, live_streaming)
 	VALUES ('3', 'True', 'False', 'True');
 	
 INSERT INTO public.system(
-	system_id, capture_fotos, capture_videos, live_streaming)
+	system_id, capture_photos, capture_videos, live_streaming)
 	VALUES ('4', 'True', 'True', 'True');
 
 -- Table Configurations --------------------------------------------------------

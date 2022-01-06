@@ -4,9 +4,9 @@ import logic.Log;
 
 public class MQTTBroker
 {
-    private static int qos;
-    private static String broker;
-    private static String clientId;
+    private int qos;
+    private String broker;
+    private String clientId;
 
     public MQTTBroker(String clientId, String ip, int port, int qos)
     {
@@ -16,17 +16,17 @@ public class MQTTBroker
         Log.logmqtt.info("Created MQTT Broker with QoS: "+qos+" and broker: "+broker+" and clientId: "+clientId);
     }
 
-    public static int getQos()
+    public int getQos()
     {
         return qos;
     }
 
-    public static String getBroker()
+    public String getBroker()
     {
         return broker;
     }
 
-    public static String getClientId()
+    public String getClientId()
     {
         return clientId;
     }

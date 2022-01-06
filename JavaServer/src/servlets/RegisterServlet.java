@@ -47,7 +47,7 @@ public class RegisterServlet extends HttpServlet {
 
         Date date1 = Date.valueOf(Logic.formatDate(birth_date));
 
-        if (password.equals(request.getParameter("password2")) && date1.before(new Date(System.currentTimeMillis()))) {
+        if (password.equals(request.getParameter("password2")) && date1.before(new Date(System.currentTimeMillis())) && !first_name.equals("admin")) {
             // Obtain connection to database
             DBConnection db = new DBConnection("postgres","123456");
 

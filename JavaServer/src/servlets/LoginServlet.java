@@ -50,9 +50,13 @@ public class LoginServlet extends HttpServlet {
                 // Redirect to the home page
                 HttpSession session = request.getSession();
                 session.setAttribute("email", email);
-                response.sendRedirect("/securia/dashboard.jsp");
+                if (username.equals("admin")) {
+                    response.sendRedirect("/securia/admin.jsp");
+                }else {
+                    response.sendRedirect("/securia/dashboard.jsp");
+                }
                 Log.log.info("Login successful for user: " + username);
-            }else{
+            } else{
                 // If the user is not valid, redirect to the login page
                 response.sendRedirect("/securia/error.jsp?error=login");
                 Log.log.info("Login failed for user: " + username);
