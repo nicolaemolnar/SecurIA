@@ -13,7 +13,7 @@ import androidx.appcompat.widget.SwitchCompat;
 
 public class config_activity extends Activity {
     Atributos_Usuario atrib=Atributos_Usuario.getInstance();
-    EditText userName,email, password, repeatedPassword;
+    EditText email, firsName, surName, password, repeatedPassword, phone, birthDate;
     Button btnBack,btnExit;
 
     SwitchCompat sendNotifications,captureFotos,lifeStream,captureVideos;
@@ -30,12 +30,15 @@ public class config_activity extends Activity {
         this.btnExit = this.findViewById(R.id.btnExit);
 
         //inicio de atributos de usuario y posibilidad de cambio de los mismos
-        this.userName = this.findViewById(R.id.userName);
+        this.firsName = this.findViewById(R.id.firsName);
+        this.surName = this.findViewById(R.id.surName);
         this.email = this.findViewById(R.id.email);
         this.password = this.findViewById(R.id.password);
         this.repeatedPassword = this.findViewById(R.id.repeatedPassword);
+        this.phone = this.findViewById(R.id.phone);
+        this.birthDate = this.findViewById(R.id.birthDate);
 
-        userName.setText(atrib.get_userName().toString());
+        surName.setText(atrib.get_userName().toString());
         email.setText(atrib.get_email().toString());
         password.setText(atrib.get_password().toString());
         repeatedPassword.setText(atrib.get_repeatedPassword().toString());
