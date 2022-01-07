@@ -94,6 +94,7 @@ public class config_activity extends Activity {
             @Override
             public void onClick(View v) {
 
+
                 fir = firstName.getText().toString();
                 sur = surName.getText().toString();
                 pass = password.getText().toString();
@@ -101,11 +102,16 @@ public class config_activity extends Activity {
                 pho = phone.getText().toString();
                 brith = birthDate.getText().toString();
 
-                //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
+                if(fir.isEmpty() || sur.isEmpty()||pass.isEmpty()||rpass.isEmpty()||pho.isEmpty()||brith.isEmpty()){
+                    textViewError.setText("Some fields are empty.");
+                }
+                else{
+                    //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
 
-                String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email="+ email  +"&password="+ pass  +"&password_conf="+ rpass +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ Photos  +"&getVideos="+ true  +"&canStream="+ Stream  ;
-                config_activity.GetXMLTask task = new config_activity.GetXMLTask();
-                task.execute(new String[] { urlSetServlet });
+                    String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email="+ email  +"&password="+ pass  +"&password_conf="+ rpass +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ Photos  +"&getVideos="+ true  +"&canStream="+ Stream  ;
+                    config_activity.GetXMLTask task2 = new config_activity.GetXMLTask();
+                    task2.execute(new String[] { urlSetServlet });
+                }
             }
         });
 
@@ -116,7 +122,7 @@ public class config_activity extends Activity {
                     //poner la parte de las notificaciones
                 }
                 else{
-                    
+
                 }
             }
         });
