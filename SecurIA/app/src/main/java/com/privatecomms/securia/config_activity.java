@@ -105,10 +105,13 @@ public class config_activity extends Activity {
                 if(fir.isEmpty() || sur.isEmpty()||pass.isEmpty()||rpass.isEmpty()||pho.isEmpty()||brith.isEmpty()){
                     textViewError.setText("Some fields are empty.");
                 }
+                else if(!pass.equals(rpass)){
+                    textViewError.setText("The password are different.");
+                }
                 else{
                     //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
 
-                    String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email="+ email  +"&password="+ pass  +"&password_conf="+ rpass +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ Photos  +"&getVideos="+ true  +"&canStream="+ Stream  ;
+                    String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email="+ email  +"&password="+ pass  +"&password_conf="+ rpass +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ Photos  +"&canStream="+ Stream  ;
                     config_activity.GetXMLTask task2 = new config_activity.GetXMLTask();
                     task2.execute(new String[] { urlSetServlet });
                 }
