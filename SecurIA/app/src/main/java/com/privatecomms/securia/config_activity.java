@@ -1,9 +1,14 @@
 package com.privatecomms.securia;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +18,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import androidx.appcompat.widget.SwitchCompat;
+import androidx.constraintlayout.widget.ConstraintAttribute;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +30,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Calendar;
+import java.util.Date;
+
 
 public class config_activity extends Activity {
     EditText firstName, surName, password, repeatedPassword, phone, birthDate;
@@ -102,18 +110,23 @@ public class config_activity extends Activity {
                 pho = phone.getText().toString();
                 brith = birthDate.getText().toString();
 
-                if(fir.isEmpty() || sur.isEmpty()||pass.isEmpty()||rpass.isEmpty()||pho.isEmpty()||brith.isEmpty()){
-                    textViewError.setText("Some fields are empty.");
-                }
-                else if(!pass.equals(rpass)){
-                    textViewError.setText("The password are different.");
-                }
-                else{
-                    //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
+                try {
+                    if (fir.isEmpty() || sur.isEmpty() || pass.isEmpty() || rpass.isEmpty() || pho.isEmpty() || brith.isEmpty()) {
+                        textViewError.setText("Some field is empty.");
+                    } else if (!pass.equals(rpass)) {
+                        textViewError.setText("The password are different.");
+                    } else if (!fechaValida(brith)) {
+                        textViewError.setText("Date is invalid");
+                    } else {
+                        //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
 
-                    String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email="+ email  +"&password="+ pass  +"&password_conf="+ rpass +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ Photos  +"&canStream="+ Stream  ;
-                    config_activity.GetXMLTask task2 = new config_activity.GetXMLTask();
-                    task2.execute(new String[] { urlSetServlet });
+                        String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email=" + email + "&password=" + pass + "&password_conf=" + rpass + "&firstname=" + fir + "&surname=" + sur + "&phone=" + pho + "&birthdate=" + brith + "&getPhotos=" + Photos + "&canStream=" + Stream;
+                        config_activity.GetXMLTask task2 = new config_activity.GetXMLTask();
+                        task2.execute(new String[]{urlSetServlet});
+                        textViewError.setText("");
+                    }
+                }catch (Exception e){
+
                 }
             }
         });
@@ -154,6 +167,33 @@ public class config_activity extends Activity {
             }
         });
     }
+
+    public static Date ParseFecha(String fecha)
+    {
+        SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
+        Date fechaDate = null;
+        try {
+            fechaDate = formato.parse(fecha);
+        }
+        catch (ParseException ex)
+        {
+            System.out.println(ex);
+        }
+        return fechaDate;
+    }
+
+    public static boolean fechaValida(String fecha) throws ParseException {
+
+        Date actual = Calendar.getInstance().getTime();
+        System.out.println(actual);
+
+        if(actual.before(ParseFecha(fecha))){
+            return false; //Our date is invalid
+        }else{
+            return true;
+        }
+    }
+
 
 
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
