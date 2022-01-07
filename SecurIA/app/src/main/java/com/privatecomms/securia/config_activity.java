@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,9 +12,20 @@ import android.widget.EditText;
 
 import androidx.appcompat.widget.SwitchCompat;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class config_activity extends Activity {
-    EditText email, firsName, surName, password, repeatedPassword, phone, birthDate;
-    Button btnBack,btnExit;
+    EditText email, firstName, surName, password, repeatedPassword, phone, birthDate;
+    Button btnBack,btnExit,saveUpdate;
 
     SwitchCompat sendNotifications,captureFotos,lifeStream;
     boolean stateSwitch1,stateSwitch2,stateSwitch3;
@@ -27,9 +39,10 @@ public class config_activity extends Activity {
         //init de los botones
         this.btnBack = this.findViewById(R.id.btnBack);
         this.btnExit = this.findViewById(R.id.btnExit);
+        this.saveUpdate = this.findViewById(R.id.saveUpdate);
 
         //inicio de atributos de usuario y posibilidad de cambio de los mismos
-        this.firsName = this.findViewById(R.id.firsName);
+        this.firstName = this.findViewById(R.id.firstName);
         this.surName = this.findViewById(R.id.surName);
         this.email = this.findViewById(R.id.email);
         this.password = this.findViewById(R.id.password);
@@ -48,6 +61,10 @@ public class config_activity extends Activity {
         captureFotos = this.findViewById(R.id.captureFotos);
         lifeStream = this.findViewById(R.id.lifeStream);
 
+        String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
+        config_activity.GetXMLTask task = new config_activity.GetXMLTask();
+        task.execute(new String[] { urlLoginServlet });
+
         //funciones de botones
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -63,6 +80,13 @@ public class config_activity extends Activity {
             public void onClick(View v) {
                 finish();
                 System.exit(0);
+            }
+        });
+
+        saveUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
@@ -99,5 +123,73 @@ public class config_activity extends Activity {
                 editor.apply();
             }
         });
+    }
+
+
+    private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
+            JSONObject output = null;
+            for (String url : urls) {
+                String json_string = getOutputFromUrl(url);
+                try {
+                    output = new JSONObject(json_string);
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
+                }
+            }
+            return output;
+        }
+
+        private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
+            StringBuffer output = new StringBuffer("");
+            try {
+                InputStream stream = getHttpConnection(url);
+                BufferedReader buffer = new BufferedReader(
+                        new InputStreamReader(stream));
+                String s = "";
+                while ((s = buffer.readLine()) != null)
+                    output.append(s);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return String.valueOf(output);
+        }
+
+        // Makes HttpURLConnection and returns InputStream
+        private InputStream getHttpConnection(String urlString)
+                throws IOException {
+            InputStream stream = null;
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            try {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+                stream = httpConnection.getInputStream();
+                //if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                //}
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return stream;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
+            try {
+                if(output.getBoolean("successful_login")){
+                    Intent main = new Intent(getApplicationContext(),MainActivity.class);
+                    main.putExtra("email",emailAddress.getText());
+                    startActivity(main);
+                }else{
+                    textViewError.setText("Email or Password are incorrect, try again.");
+                }
+            } catch (JSONException jsonException) {
+                jsonException.printStackTrace();
+            }
+        }
     }
 }
