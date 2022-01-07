@@ -8,7 +8,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
@@ -31,11 +33,8 @@ public class config_activity extends Activity {
 
     String fir, sur, pass, rpass, pho, brith;
 
-    //SwitchCompat sendNotifications,captureFotos,lifeStream;
-    boolean stateSwitch1,stateSwitch2,stateSwitch3;
-
-    SharedPreferences preferences;
-
+    boolean Photos, getVideo, Stream;
+    Switch sendNotifications,captureFotos,lifeStream;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,14 +58,9 @@ public class config_activity extends Activity {
 
 
         //inicio de los botones de switch de las opciones
-        preferences = getSharedPreferences("PREFS",0);
-        stateSwitch1 = preferences.getBoolean("sendNotifications",false);
-        stateSwitch2 = preferences.getBoolean("captureFotos",false);
-        stateSwitch3 = preferences.getBoolean("lifeStream",false);
-
-        /*sendNotifications = this.findViewById(R.id.sendNotifications);
+        sendNotifications = this.findViewById(R.id.sendNotifications);
         captureFotos = this.findViewById(R.id.captureFotos);
-        lifeStream = this.findViewById(R.id.lifeStream);*/
+        lifeStream = this.findViewById(R.id.lifeStream);
 
         Bundle datosConfig = this.getIntent().getExtras();
 
@@ -75,8 +69,6 @@ public class config_activity extends Activity {
         String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
         config_activity.GetXMLTask task = new config_activity.GetXMLTask();
         task.execute(new String[] { urlLoginServlet });
-
-
 
         showemail.setText(email);
 
@@ -111,45 +103,47 @@ public class config_activity extends Activity {
 
                 //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
 
-                String urlSetServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email  +"&password="+ pass  +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ true  +"&getVideos="+ true  +"&canStream="+ true  ;
+                String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email="+ email  +"&password="+ pass  +"&password_conf="+ rpass +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ Photos  +"&getVideos="+ true  +"&canStream="+ Stream  ;
                 config_activity.GetXMLTask task = new config_activity.GetXMLTask();
                 task.execute(new String[] { urlSetServlet });
             }
         });
-/**
-        //funciones de activacion o desactivacion de los switches
-        sendNotifications.setOnClickListener(new View.OnClickListener() {
+
+        sendNotifications.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                stateSwitch1 = !stateSwitch1;
-                sendNotifications.setChecked(stateSwitch1);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("sendNotifications",stateSwitch1);
-                editor.apply();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    //poner la parte de las notificaciones
+                }
+                else{
+                    
+                }
             }
         });
 
-        captureFotos.setOnClickListener(new View.OnClickListener() {
+        captureFotos.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                stateSwitch2 = !stateSwitch2;
-                captureFotos.setChecked(stateSwitch2);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("captureFotos",stateSwitch2);
-                editor.apply();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Photos=true;
+                }
+                else{
+                    Photos=false;
+                }
             }
         });
 
-        lifeStream.setOnClickListener(new View.OnClickListener() {
+        lifeStream.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                stateSwitch3 = !stateSwitch3;
-                lifeStream.setChecked(stateSwitch3);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("lifeStream",stateSwitch3);
-                editor.apply();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Stream=true;
+                }
+                else{
+                    Stream=false;
+                }
             }
-        });**/
+        });
     }
 
 
@@ -213,8 +207,10 @@ public class config_activity extends Activity {
                 repeatedPassword.setText(output.getString("password"));
                 phone.setText(output.getString("phone"));
                 birthDate.setText(output.getString("birthdate"));
-                
-                //sendNotifications.setChecked(output.getBoolean());
+
+                //sendNotifications.setChecked(output.getBoolean(""));
+                captureFotos.setChecked(output.getBoolean("getPhotos"));
+                lifeStream.setChecked(output.getBoolean("canStream"));
 
 
             } catch (JSONException jsonException) {
