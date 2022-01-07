@@ -38,6 +38,7 @@ public class MQTTSubscriber implements MqttCallback {
             for (String camera : cameras) {
                 topics.add("/sensor/camera/"+camera+"/Image");
                 topics.add("/sensor/camera/"+camera+"/Streaming");
+                Logic.streams.put(camera, new String[]{"",""});
             }
 
             // Subscribe to all the topics the server needs
@@ -66,7 +67,7 @@ public class MQTTSubscriber implements MqttCallback {
         try {
             for (String topic : topics) {
                 client.subscribe(topic);
-                //Log.logmqtt.error("Subscribed to topic: "+topic);
+                Log.logmqtt.info("Subscribed to topic: "+topic);
             }
         }catch (Exception e){
             Log.logmqtt.error("Error subscribing to topics. Cause:"+e.getMessage());
@@ -96,11 +97,17 @@ public class MQTTSubscriber implements MqttCallback {
                 // TODO: Save the measurement in the database
                 break;
             case "camera":
-                String image_str = mqttMessage.toString();
-                byte[] image_bytes = Base64.getDecoder().decode(image_str);
-                Log.logmqtt.error("Image received: "+image_bytes.length);
-                String image_path = Logic.add_image(Logic.imagePath, image_bytes, "jpg");
-                Log.logmqtt.error("Image saved in: "+image_path);
+                if (topics[4].equals("Image")) {
+                    String image_str = mqttMessage.toString();
+                    byte[] image_bytes = Base64.getDecoder().decode(image_str);
+                    Log.logmqtt.info("Image received: " + image_bytes.length);
+                    //String image_path = Logic.add_image(Logic.imagePath, image_bytes, "jpg", topics[3]);
+                    //Log.logmqtt.info("Image saved in: " + image_path);
+                }else if (topics[4].equals("Streaming")) {
+                    String image_str = mqttMessage.toString();
+                    Logic.streams.get(topics[3])[0] = image_str;
+                    Logic.streams.get(topics[3])[1] = "detected";
+                }
                 break;
             default:
                 Log.logmqtt.error("Topic not recognized: "+topic);

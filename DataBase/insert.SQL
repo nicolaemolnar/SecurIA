@@ -121,24 +121,24 @@ INSERT INTO public.allow_notifications(
 -- Table Camera ---------------------------------------------------------------
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('1', 'Main door', 'True', '1');
+    VALUES ('camera_1', 'Main door', 'True', '1');
 
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('2', 'Main door', 'False', '2');
+    VALUES ('camera_2', 'Main door', 'False', '2');
 
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('3', 'Main door', 'False', '3');
+    VALUES ('camera_3', 'Main door', 'False', '3');
 
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('4', 'Main door', 'False', '4');
+    VALUES ('camera_4', 'Main door', 'False', '4');
 
 -- Table camera_event ----------------------------------------------------------
 INSERT INTO public.camera_event(
     id, camera_id, system_id)
-    VALUES ('1', '1', '1');
+    VALUES ('1', 'camera_1', '1');
 
 
 -- Table Sensor_type ----------------------------------------------------------

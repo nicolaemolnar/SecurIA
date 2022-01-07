@@ -1,6 +1,6 @@
 ﻿/*
 Created: 26/11/2021
-Modified: 05/01/2022
+Modified: 06/01/2022
 Model: PostgreSQL 11
 Database: PostgreSQL 11
 */
@@ -94,7 +94,7 @@ ALTER TABLE "sensor_type" ADD CONSTRAINT "PK_sensor_type" PRIMARY KEY ("type")
 
 CREATE TABLE "camera"
 (
-  "camera_id" Bigint NOT NULL,
+  "camera_id" Character varying NOT NULL,
   "name" Character varying NOT NULL,
   "detection" Boolean NOT NULL,
   "system_id" Bigint NOT NULL
@@ -111,7 +111,7 @@ ALTER TABLE "camera" ADD CONSTRAINT "PK_camera" PRIMARY KEY ("camera_id","system
 CREATE TABLE "camera_event"
 (
   "id" Bigint NOT NULL,
-  "camera_id" Bigint NOT NULL,
+  "camera_id" Character varying NOT NULL,
   "system_id" Bigint NOT NULL
 )
 WITH (
@@ -172,10 +172,10 @@ ALTER TABLE "contact_request" ADD CONSTRAINT "PK_contact_request" PRIMARY KEY ("
 
 CREATE TABLE "image"
 (
-  "encrypted_img" Text NOT NULL,
+  "path" Text NOT NULL,
   "timestamp" Timestamp NOT NULL,
   "label" Text NOT NULL,
-  "camera_id" Bigint NOT NULL,
+  "camera_id" Character varying NOT NULL,
   "system_id" Bigint NOT NULL,
   "image_id" Bigint NOT NULL
 )

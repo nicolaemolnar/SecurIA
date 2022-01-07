@@ -7,13 +7,17 @@ import mqtt.MQTTSubscriber;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.sql.Array;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Logic {
-    public static String imagePath = "C:\\xampp\\tomcat\\webapps\\securia\\images\\";
+    public static String imagePath = "/securia/Images/";
     public static MQTTBroker mqttBroker;
     public static MQTTSubscriber mqttSubscriber;
     public static MQTTPublisher mqttPublisher;
+    public static HashMap<String, String[]> streams;
 
     public static String formatDate(String date) {
         String[] dateSplit = date.split("-");
@@ -56,7 +60,7 @@ public class Logic {
         db.closeConnection();
     }
 
-    public static String add_image(String path, byte[] image, String extension) {
+    public static String add_image(String path, byte[] image, String extension, String camera_id) {
         // Obtain DB connection
         DBConnection db = new DBConnection("postgres","123456");
         String file_path = null;
@@ -67,8 +71,9 @@ public class Logic {
             int image_id = db.get_image_id();
 
             // Add image to file system
-            file_path = path + "/" + image_id + "." + extension;
-            File image_file = new File(file_path);
+            file_path = path + image_id + "." + extension;
+            String tomcat_path = System.getProperty("catalina.base") + "/webapps/" + file_path;
+            File image_file = new File(tomcat_path);
             if (!image_file.exists()) {
                 try {
                     image_file.createNewFile();
@@ -88,7 +93,7 @@ public class Logic {
             }
 
             // Add image to db
-            db.add_image(image_id, file_path);
+            db.add_image(image_id, file_path, camera_id);
 
             // Close DB connection
             db.closeConnection();
@@ -97,6 +102,25 @@ public class Logic {
         }
 
         return file_path;
+    }
+
+    public static ArrayList<Image> get_images(String email) {
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        ArrayList<Image> images = new ArrayList<>();
+        try {
+            db.obtainConnection();
+
+            // Get images from db
+            images = db.get_images(email);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not get images from db for user "+email+". Cause:" + e.getMessage());
+        }
+
+        return images;
     }
 }
 
