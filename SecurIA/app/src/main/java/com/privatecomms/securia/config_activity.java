@@ -87,6 +87,7 @@ public class config_activity extends Activity {
                 // Ir a la pagina web para realizar el registro
                 Intent menu = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(menu);
+                finish();
             }
         });
 
