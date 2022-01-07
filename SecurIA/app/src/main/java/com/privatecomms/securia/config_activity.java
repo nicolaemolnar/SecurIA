@@ -29,6 +29,8 @@ public class config_activity extends Activity {
     Button btnBack,btnExit,saveUpdate;
     TextView showemail,textViewError;
 
+    String fir, sur, pass, rpass, pho, brith;
+
     //SwitchCompat sendNotifications,captureFotos,lifeStream;
     boolean stateSwitch1,stateSwitch2,stateSwitch3;
 
@@ -62,18 +64,19 @@ public class config_activity extends Activity {
         stateSwitch2 = preferences.getBoolean("captureFotos",false);
         stateSwitch3 = preferences.getBoolean("lifeStream",false);
 
-        //sendNotifications = this.findViewById(R.id.sendNotifications);
-       // captureFotos = this.findViewById(R.id.captureFotos);
-        //lifeStream = this.findViewById(R.id.lifeStream);
+        /*sendNotifications = this.findViewById(R.id.sendNotifications);
+        captureFotos = this.findViewById(R.id.captureFotos);
+        lifeStream = this.findViewById(R.id.lifeStream);*/
 
         Bundle datosConfig = this.getIntent().getExtras();
 
         String email = datosConfig.getString("email");
-        System.out.println(email);
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
         config_activity.GetXMLTask task = new config_activity.GetXMLTask();
         task.execute(new String[] { urlLoginServlet });
+
+
 
         showemail.setText(email);
 
@@ -99,6 +102,18 @@ public class config_activity extends Activity {
             @Override
             public void onClick(View v) {
 
+                fir = firstName.getText().toString();
+                sur = surName.getText().toString();
+                pass = password.getText().toString();
+                rpass = repeatedPassword.getText().toString();
+                pho = phone.getText().toString();
+                brith = birthDate.getText().toString();
+
+                //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
+
+                String urlSetServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email  +"&password="+ pass  +"&firstname="+ fir  +"&surname="+ sur  +"&phone="+ pho  +"&birthdate="+ brith +"&getPhotos="+ true  +"&getVideos="+ true  +"&canStream="+ true  ;
+                config_activity.GetXMLTask task = new config_activity.GetXMLTask();
+                task.execute(new String[] { urlSetServlet });
             }
         });
 /**
@@ -188,18 +203,23 @@ public class config_activity extends Activity {
             }
             return stream;
         }
-/**
+
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
             try {
-                if(output.getBoolean("successful saved")){
+                firstName.setText(output.getString("firstname"));
+                surName.setText(output.getString("surname"));
+                password.setText(output.getString("password"));
+                repeatedPassword.setText(output.getString("password"));
+                phone.setText(output.getString("phone"));
+                birthDate.setText(output.getString("birthdate"));
+                
+                //sendNotifications.setChecked(output.getBoolean());
 
-                }else{
-                    textViewError.setText("An error has ocurred");
-                }
+
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
             }
-        }**/
+        }
     }
 }
