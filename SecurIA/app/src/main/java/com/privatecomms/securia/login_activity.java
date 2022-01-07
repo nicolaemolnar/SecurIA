@@ -126,7 +126,11 @@ public class login_activity extends AppCompatActivity {
             try {
                 if(output.getBoolean("successful_login")){
                     Intent main = new Intent(getApplicationContext(),MainActivity.class);
-                    main.putExtra("email",emailAddress.getText());
+                    Bundle datos= new Bundle();
+
+                    datos.putString("email",emailAddress.getText().toString());
+                    main.putExtras(datos);
+                    //main.putExtra("email",emailAddress.getText());
                     startActivity(main);
                 }else{
                     textViewError.setText("Email or Password are incorrect, try again.");

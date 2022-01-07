@@ -6,6 +6,19 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/textView17"
+        android:layout_width="209dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="32dp"
+        android:text="Personal Settings"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/showemail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
         android:id="@+id/textView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -230,34 +243,6 @@
         app:layout_constraintTop_toTopOf="@+id/view2"
         app:layout_constraintVertical_bias="0.386" />
 
-    <EditText
-        android:id="@+id/editTextTextPersonName5"
-        android:layout_width="413dp"
-        android:layout_height="46dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Personal settings"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/view2"
-        app:layout_constraintVertical_bias="0.061" />
-
-    <EditText
-        android:id="@+id/editTextTextPersonName6"
-        android:layout_width="413dp"
-        android:layout_height="46dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="App settings"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.672" />
-
     <Switch
         android:id="@+id/captureFotos"
         android:layout_width="wrap_content"
@@ -304,5 +289,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.907" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="226dp"
+        android:layout_height="46dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginBottom="20dp"
+        android:text="App Settings"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/sendNotifications"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phone"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

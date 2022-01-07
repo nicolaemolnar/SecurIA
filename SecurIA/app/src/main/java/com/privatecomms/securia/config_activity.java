@@ -29,7 +29,7 @@ public class config_activity extends Activity {
     Button btnBack,btnExit,saveUpdate;
     TextView showemail,textViewError;
 
-    SwitchCompat sendNotifications,captureFotos,lifeStream;
+    //SwitchCompat sendNotifications,captureFotos,lifeStream;
     boolean stateSwitch1,stateSwitch2,stateSwitch3;
 
     SharedPreferences preferences;
@@ -63,18 +63,19 @@ public class config_activity extends Activity {
         stateSwitch3 = preferences.getBoolean("lifeStream",false);
 
         //sendNotifications = this.findViewById(R.id.sendNotifications);
-        captureFotos = this.findViewById(R.id.captureFotos);
-        lifeStream = this.findViewById(R.id.lifeStream);
+       // captureFotos = this.findViewById(R.id.captureFotos);
+        //lifeStream = this.findViewById(R.id.lifeStream);
 
-        Bundle datos = this.getIntent().getExtras();
+        Bundle datosConfig = this.getIntent().getExtras();
 
-        String email = datos.getString("email");
-
-        showemail.setText(email);
+        String email = datosConfig.getString("email");
+        System.out.println(email);
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
         config_activity.GetXMLTask task = new config_activity.GetXMLTask();
         task.execute(new String[] { urlLoginServlet });
+
+        showemail.setText(email);
 
         //funciones de botones
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +101,7 @@ public class config_activity extends Activity {
 
             }
         });
-
+/**
         //funciones de activacion o desactivacion de los switches
         sendNotifications.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +134,7 @@ public class config_activity extends Activity {
                 editor.putBoolean("lifeStream",stateSwitch3);
                 editor.apply();
             }
-        });
+        });**/
     }
 
 
@@ -187,20 +188,18 @@ public class config_activity extends Activity {
             }
             return stream;
         }
-
+/**
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
             try {
-                if(output.getBoolean("successful_saved")){
-                    Intent main = new Intent(getApplicationContext(),MainActivity.class);
-                    main.putExtra("email",showemail.getText());
-                    startActivity(main);
+                if(output.getBoolean("successful saved")){
+
                 }else{
                     textViewError.setText("An error has ocurred");
                 }
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
             }
-        }
+        }**/
     }
 }

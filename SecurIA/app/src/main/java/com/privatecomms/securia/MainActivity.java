@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
         //bundle para recbir los datos del login
-        Bundle datos = this.getIntent().getExtras();
+        Bundle datos = getIntent().getExtras();
+        System.out.println(datos);
 
         //Init de botones
         this.btnConfig = this.findViewById(R.id.btnConfig);
@@ -41,15 +42,23 @@ public class MainActivity extends AppCompatActivity {
 
         //le paso los datos del usuario del inicio de sesion del login
         String email = datos.getString("email");
+        System.out.println(email);
         String password = datos.getString("password");
 
-        /**
+
         //funciones de botones y switch de stream
         btnConfig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent config = new Intent(getApplicationContext(),config_activity.class);
-                config.putExtra("email",email);
+                Bundle datos = getIntent().getExtras();
+                String email = datos.getString(("email"));
+
+                Bundle datosConfig= new Bundle();
+
+                datos.putString("email",email);
+                config.putExtras(datos);
+
                 startActivity(config);
             }
         });
@@ -61,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 System.exit(0);
             }
         });
-
+/**
         stream.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
