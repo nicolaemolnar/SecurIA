@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import org.json.JSONObject;
 import org.json.*;
 
@@ -23,7 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class login_activity extends Activity {
+public class login_activity extends AppCompatActivity {
 
     private TextView btnregister,textViewError;
     private Button btnlogin;

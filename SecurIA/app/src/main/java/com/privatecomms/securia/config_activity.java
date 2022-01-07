@@ -12,12 +12,11 @@ import android.widget.EditText;
 import androidx.appcompat.widget.SwitchCompat;
 
 public class config_activity extends Activity {
-    Atributos_Usuario atrib=Atributos_Usuario.getInstance();
     EditText email, firsName, surName, password, repeatedPassword, phone, birthDate;
     Button btnBack,btnExit;
 
-    SwitchCompat sendNotifications,captureFotos,lifeStream,captureVideos;
-    boolean stateSwitch1,stateSwitch2,stateSwitch3,stateSwitch4;
+    SwitchCompat sendNotifications,captureFotos,lifeStream;
+    boolean stateSwitch1,stateSwitch2,stateSwitch3;
 
     SharedPreferences preferences;
 
@@ -38,23 +37,16 @@ public class config_activity extends Activity {
         this.phone = this.findViewById(R.id.phone);
         this.birthDate = this.findViewById(R.id.birthDate);
 
-        surName.setText(atrib.get_userName().toString());
-        email.setText(atrib.get_email().toString());
-        password.setText(atrib.get_password().toString());
-        repeatedPassword.setText(atrib.get_repeatedPassword().toString());
-
 
         //inicio de los botones de switch de las opciones
         preferences = getSharedPreferences("PREFS",0);
         stateSwitch1 = preferences.getBoolean("sendNotifications",false);
         stateSwitch2 = preferences.getBoolean("captureFotos",false);
         stateSwitch3 = preferences.getBoolean("lifeStream",false);
-        stateSwitch4 = preferences.getBoolean("captureVideos",false);
 
         //sendNotifications = this.findViewById(R.id.sendNotifications);
         captureFotos = this.findViewById(R.id.captureFotos);
         lifeStream = this.findViewById(R.id.lifeStream);
-        captureVideos = this.findViewById(R.id.captureVideos);
 
         //funciones de botones
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -107,17 +99,5 @@ public class config_activity extends Activity {
                 editor.apply();
             }
         });
-
-        captureVideos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stateSwitch4 = !stateSwitch4;
-                captureVideos.setChecked(stateSwitch4);
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putBoolean("captureVideos",stateSwitch4);
-                editor.apply();
-            }
-        });
-
     }
 }

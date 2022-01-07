@@ -259,18 +259,6 @@
         app:layout_constraintVertical_bias="0.672" />
 
     <Switch
-        android:id="@+id/captureVideos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Capture videos"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.837"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.788" />
-
-    <Switch
         android:id="@+id/captureFotos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -289,10 +277,9 @@
         android:text="Life Stream Capture"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.133"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.788" />
+        app:layout_constraintVertical_bias="0.796" />
 
     <Switch
         android:id="@+id/sendNotifications"
