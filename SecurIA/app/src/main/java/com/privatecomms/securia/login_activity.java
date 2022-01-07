@@ -130,8 +130,8 @@ public class login_activity extends AppCompatActivity {
 
                     datos.putString("email",emailAddress.getText().toString());
                     main.putExtras(datos);
-                    //main.putExtra("email",emailAddress.getText());
                     startActivity(main);
+                    finish();
                 }else{
                     textViewError.setText("Email or Password are incorrect, try again.");
                 }
