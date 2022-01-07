@@ -168,12 +168,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.258" />
 
-    <EditText
-        android:id="@+id/email"
+    <TextView
+        android:id="@+id/showemail"
         android:layout_width="350dp"
         android:layout_height="43dp"
         android:ems="10"
-        android:inputType="textPersonName"
+        android:text="Register here"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.344"

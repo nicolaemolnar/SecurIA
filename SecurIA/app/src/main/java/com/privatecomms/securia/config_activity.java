@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -24,13 +25,15 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class config_activity extends Activity {
-    EditText email, firstName, surName, password, repeatedPassword, phone, birthDate;
+    EditText firstName, surName, password, repeatedPassword, phone, birthDate;
     Button btnBack,btnExit,saveUpdate;
+    TextView showemail,textViewError;
 
     SwitchCompat sendNotifications,captureFotos,lifeStream;
     boolean stateSwitch1,stateSwitch2,stateSwitch3;
 
     SharedPreferences preferences;
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,15 +43,17 @@ public class config_activity extends Activity {
         this.btnBack = this.findViewById(R.id.btnBack);
         this.btnExit = this.findViewById(R.id.btnExit);
         this.saveUpdate = this.findViewById(R.id.saveUpdate);
+        this.textViewError = this.findViewById(R.id.textViewError);
 
         //inicio de atributos de usuario y posibilidad de cambio de los mismos
         this.firstName = this.findViewById(R.id.firstName);
         this.surName = this.findViewById(R.id.surName);
-        this.email = this.findViewById(R.id.email);
         this.password = this.findViewById(R.id.password);
         this.repeatedPassword = this.findViewById(R.id.repeatedPassword);
         this.phone = this.findViewById(R.id.phone);
         this.birthDate = this.findViewById(R.id.birthDate);
+
+        this.showemail = this.findViewById(R.id.showemail);
 
 
         //inicio de los botones de switch de las opciones
@@ -60,6 +65,12 @@ public class config_activity extends Activity {
         //sendNotifications = this.findViewById(R.id.sendNotifications);
         captureFotos = this.findViewById(R.id.captureFotos);
         lifeStream = this.findViewById(R.id.lifeStream);
+
+        Bundle datos = this.getIntent().getExtras();
+
+        String email = datos.getString("email");
+
+        showemail.setText(email);
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
         config_activity.GetXMLTask task = new config_activity.GetXMLTask();
@@ -180,12 +191,12 @@ public class config_activity extends Activity {
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
             try {
-                if(output.getBoolean("successful_login")){
+                if(output.getBoolean("successful_saved")){
                     Intent main = new Intent(getApplicationContext(),MainActivity.class);
-                    main.putExtra("email",emailAddress.getText());
+                    main.putExtra("email",showemail.getText());
                     startActivity(main);
                 }else{
-                    textViewError.setText("Email or Password are incorrect, try again.");
+                    textViewError.setText("An error has ocurred");
                 }
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
