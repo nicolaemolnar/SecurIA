@@ -2,10 +2,6 @@ package com.privatecomms.securia;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,8 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import androidx.constraintlayout.widget.ConstraintAttribute;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-public class config_activity extends Activity {
+public class ConfigActivity extends Activity {
     EditText firstName, surName, password, repeatedPassword, phone, birthDate;
     Button btnBack,btnExit,saveUpdate;
     TextView showemail,textViewError;
@@ -75,7 +69,7 @@ public class config_activity extends Activity {
         String email = datosConfig.getString("email");
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
-        config_activity.GetXMLTask task = new config_activity.GetXMLTask();
+        ConfigActivity.GetXMLTask task = new ConfigActivity.GetXMLTask();
         task.execute(new String[] { urlLoginServlet });
 
         showemail.setText(email);
@@ -122,7 +116,7 @@ public class config_activity extends Activity {
                         //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
 
                         String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email=" + email + "&password=" + pass + "&password_conf=" + rpass + "&firstname=" + fir + "&surname=" + sur + "&phone=" + pho + "&birthdate=" + brith + "&getPhotos=" + Photos + "&canStream=" + Stream;
-                        config_activity.GetXMLTask task2 = new config_activity.GetXMLTask();
+                        ConfigActivity.GetXMLTask task2 = new ConfigActivity.GetXMLTask();
                         task2.execute(new String[]{urlSetServlet});
                         textViewError.setText("");
                     }

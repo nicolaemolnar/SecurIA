@@ -25,7 +25,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 
-public class login_activity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private TextView btnregister,textViewError;
     private Button btnlogin;

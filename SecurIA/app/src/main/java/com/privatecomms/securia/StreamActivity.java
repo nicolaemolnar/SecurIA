@@ -1,13 +1,12 @@
 package com.privatecomms.securia;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,71 +19,40 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class MainActivity extends AppCompatActivity {
+public class StreamActivity extends Activity {
 
+    private Button btnBack;
+    TextView fecha, evento;
 
-    private Button btnConfig, btnExit, btnStream;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.stream_activity);
 
-        //bundle para recbir los datos del login
-        Bundle datos = getIntent().getExtras();
-        System.out.println(datos);
+        this.btnBack = this.findViewById(R.id.btnBack);
+        this.fecha = this.findViewById(R.id.fecha);
+        this.evento = this.findViewById(R.id.evento);
 
-        //Init de botones
-        this.btnConfig = this.findViewById(R.id.btnConfig);
-        this.btnExit = this.findViewById(R.id.btnExit);
-
-        //le paso los datos del usuario del inicio de sesion del login
-        String email = datos.getString("email");
-        System.out.println(email);
-        String password = datos.getString("password");
+        Bundle datosStream= this.getIntent().getExtras();
+        String email = datosStream.getString("email");
 
 
-        //funciones de botones y switch de stream
-        btnConfig.setOnClickListener(new View.OnClickListener() {
+        String urlLoginServlet = "http://25.62.36.206:8080/securia/GetStreamFrameServlet?email="+ email;
+        StreamActivity.GetXMLTask task = new StreamActivity.GetXMLTask();
+        task.execute(new String[] { urlLoginServlet });
+
+        btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent config = new Intent(getApplicationContext(), ConfigActivity.class);
-                Bundle datosConfig = getIntent().getExtras();
-                String email = datosConfig.getString(("email"));
-
-                datosConfig.putString("email",email);
-                config.putExtras(datosConfig);
-
-                startActivity(config);
+                Intent menu = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(menu);
                 finish();
             }
         });
-
-        btnExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-                System.exit(0);
-            }
-        });
-
-        btnStream.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent stream = new Intent(getApplicationContext(), StreamActivity.class);
-                Bundle datosStream = getIntent().getExtras();
-                String email = datos.getString(("email"));
-
-                datosStream.putString("email",email);
-                stream.putExtras(datosStream);
-
-                startActivity(stream);
-                finish();
-            }
-        });
-
-
     }
+
+
+
+
 
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
 
@@ -139,7 +107,20 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
+            try {
+                if(output.getBoolean("success")){
+                    output.getString("stream");
+                    evento.setText(output.getString("label"));
 
+                }else{
+                   // textViewError.setText("Email or Password are incorrect, try again.");
+                }
+                /*fecha.setText(output.getString("fecha"));
+                */
+
+            } catch (JSONException jsonException) {
+                jsonException.printStackTrace();
+            }
         }
     }
 }
