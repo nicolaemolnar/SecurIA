@@ -2,10 +2,14 @@ package com.privatecomms.securia;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -23,6 +27,7 @@ public class StreamActivity extends Activity {
 
     private Button btnBack;
     TextView fecha, evento;
+    ImageView imageStream;
 
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -31,6 +36,7 @@ public class StreamActivity extends Activity {
         this.btnBack = this.findViewById(R.id.btnBack);
         this.fecha = this.findViewById(R.id.fecha);
         this.evento = this.findViewById(R.id.evento);
+        this.imageStream = this.findViewById(R.id.imageStream);
 
         Bundle datosStream= this.getIntent().getExtras();
         String email = datosStream.getString("email");
@@ -45,13 +51,22 @@ public class StreamActivity extends Activity {
             public void onClick(View v) {
                 Intent menu = new Intent(getApplicationContext(), MainActivity.class);
                 startActivity(menu);
-                finish();
             }
         });
     }
+//posible añadir imagen a partir de url??
 
 
-
+    public Bitmap StringToBitMap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
 
 
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
@@ -109,8 +124,18 @@ public class StreamActivity extends Activity {
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
             try {
                 if(output.getBoolean("success")){
-                    output.getString("stream");
+                    String base64String = output.getString("stream");
                     evento.setText(output.getString("label"));
+
+                    //conversion de string a imagen
+                    /**String base64Image = base64String.split(",")[1];
+                    byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+                    imageStream.setImageBitmap(decodedByte);**/
+
+                    Bitmap bm = StringToBitMap(base64String);
+                    imageStream.setImageBitmap(bm);
 
                 }else{
                    // textViewError.setText("Email or Password are incorrect, try again.");

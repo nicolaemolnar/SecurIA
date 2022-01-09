@@ -56,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
                 config.putExtras(datosConfig);
 
                 startActivity(config);
-                finish();
             }
         });
 
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 stream.putExtras(datosStream);
 
                 startActivity(stream);
-                finish();
             }
         });
 
