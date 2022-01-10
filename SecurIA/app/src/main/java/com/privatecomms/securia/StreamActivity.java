@@ -1,6 +1,9 @@
 package com.privatecomms.securia;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +25,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class StreamActivity extends Activity {
 
@@ -41,10 +50,17 @@ public class StreamActivity extends Activity {
         Bundle datosStream= this.getIntent().getExtras();
         String email = datosStream.getString("email");
 
-
         String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
         StreamActivity.GetXMLTask task = new StreamActivity.GetXMLTask();
-        task.execute(new String[] { urlLoginServlet });
+        task.execute(new String[]{urlLoginServlet});
+        try {
+            JSONObject j = task.get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,21 +83,28 @@ public class StreamActivity extends Activity {
         }
     }
 
+    public String dateToString(LocalTime date){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH.mm.ss");
+        String timeString = date.format(formatter);
+
+        return timeString;
+    }
 
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
+            System.out.println("qqq");
             JSONObject output = null;
-            for (String url : urls) {
-                String json_string = getOutputFromUrl(url);
-                try {
-                    output = new JSONObject(json_string);
-                } catch (JSONException jsonException) {
-                    jsonException.printStackTrace();
-                }
-            }
+
+                    String json_string = getOutputFromUrl(urls[0]);
+                    try {
+                        output = new JSONObject(json_string);
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
             return output;
+
         }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
@@ -122,20 +145,15 @@ public class StreamActivity extends Activity {
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
             try {
+                System.out.println("jjj");
                 if(output.getBoolean("success")){
-                    String base64String = output.getString("stream");
-                    evento.setText(output.getString("label"));
+                        String base64String = output.getString("stream");
+                        evento.setText(output.getString("label"));
+                        fecha.setText(dateToString(LocalTime.now()));
+                        System.out.println(fecha);
 
-                    //conversion de string a imagen
-                    /**String base64Image = base64String.split(",")[1];
-                    byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                    imageStream.setImageBitmap(decodedByte);**/
-
-                    Bitmap bm = StringToBitMap(base64String);
-                    imageStream.setImageBitmap(bm);
-
+                        Bitmap bm = StringToBitMap(base64String);
+                        imageStream.setImageBitmap(bm);
                 }else{
                    // textViewError.setText("Email or Password are incorrect, try again.");
                 }
