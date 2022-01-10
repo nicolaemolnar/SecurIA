@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         //Init de botones
         this.btnConfig = this.findViewById(R.id.btnConfig);
         this.btnExit = this.findViewById(R.id.btnExit);
+        this.btnStream = this.findViewById(R.id.btnStream);
 
         //le paso los datos del usuario del inicio de sesion del login
         String email = datos.getString("email");
@@ -61,8 +62,10 @@ public class MainActivity extends AppCompatActivity {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);        // Specify any activity here e.g. home or splash or login etc
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
                 finish();
-                System.exit(0);
             }
         });
 
@@ -77,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(stream);
             }
         });
-
 
     }
 

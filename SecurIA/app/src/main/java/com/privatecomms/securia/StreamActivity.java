@@ -42,15 +42,14 @@ public class StreamActivity extends Activity {
         String email = datosStream.getString("email");
 
 
-        String urlLoginServlet = "http://25.62.36.206:8080/securia/GetStreamFrameServlet?email="+ email;
+        String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
         StreamActivity.GetXMLTask task = new StreamActivity.GetXMLTask();
         task.execute(new String[] { urlLoginServlet });
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent menu = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(menu);
+                finish();
             }
         });
     }
