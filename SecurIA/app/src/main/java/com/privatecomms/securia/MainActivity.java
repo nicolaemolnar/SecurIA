@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
 
         //bundle para recbir los datos del login
-        Bundle datos = getIntent().getExtras();
+        Bundle datos= this.getIntent().getExtras();
+
         System.out.println(datos);
 
         //Init de botones
@@ -49,12 +50,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent config = new Intent(getApplicationContext(), ConfigActivity.class);
-                Bundle datosConfig = getIntent().getExtras();
-                String email = datosConfig.getString(("email"));
+                Bundle datosConfig= new Bundle();
 
                 datosConfig.putString("email",email);
                 config.putExtras(datosConfig);
-
                 startActivity(config);
             }
         });
@@ -71,12 +70,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent stream = new Intent(getApplicationContext(), StreamActivity.class);
-                Bundle datosStream = getIntent().getExtras();
-                String email = datos.getString(("email"));
+                Bundle datosStream= new Bundle();
 
                 datosStream.putString("email",email);
                 stream.putExtras(datosStream);
-
                 startActivity(stream);
             }
         });
