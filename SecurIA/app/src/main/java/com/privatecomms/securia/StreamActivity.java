@@ -51,8 +51,9 @@ public class StreamActivity extends Activity {
         String email = datosStream.getString("email");
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
-        StreamActivity.GetXMLTask task = new StreamActivity.GetXMLTask();
-        task.execute(new String[]{urlLoginServlet});
+        GetXMLTask task = new GetXMLTask(urlLoginServlet);
+        task.start();
+/**
         try {
             JSONObject j = task.get();
         } catch (ExecutionException e) {
@@ -60,17 +61,21 @@ public class StreamActivity extends Activity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+**/
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                task.interrupt();
+                try {
+                    task.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 finish();
             }
         });
     }
-//posible añadir imagen a partir de url??
-
 
     public Bitmap StringToBitMap(String encodedString) {
         try {
@@ -90,21 +95,39 @@ public class StreamActivity extends Activity {
         return timeString;
     }
 
-    private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+    public class GetXMLTask extends Thread{
+        private String url;
+        private boolean cont;
+        public GetXMLTask(String url){
+            this.url = url;
+            this.cont = true;
+        }
 
-        @Override
-        protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
-            System.out.println("qqq");
+        public void run(){
             JSONObject output = null;
 
-                    String json_string = getOutputFromUrl(urls[0]);
-                    try {
-                        output = new JSONObject(json_string);
-                    } catch (JSONException jsonException) {
-                        jsonException.printStackTrace();
-                    }
-            return output;
+            while (!this.isInterrupted()) {
+                String json_string = getOutputFromUrl(url);
+                try {
+                    output = new JSONObject(json_string);
+                    System.out.println(output.length());
 
+                    if (output.getBoolean("success")) {
+                        String base64String = output.getString("stream");
+                        evento.setText(output.getString("label"));
+                        fecha.setText(dateToString(LocalTime.now()));
+                        System.out.println(fecha);
+
+                        Bitmap bm = StringToBitMap(base64String);
+                        imageStream.setImageBitmap(bm);
+                    } else {
+                        // textViewError.setText("Email or Password are incorrect, try again.");
+                    }
+
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
+                }
+            }
         }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
@@ -140,29 +163,6 @@ public class StreamActivity extends Activity {
                 ex.printStackTrace();
             }
             return stream;
-        }
-
-        @Override
-        protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
-            try {
-                System.out.println("jjj");
-                if(output.getBoolean("success")){
-                        String base64String = output.getString("stream");
-                        evento.setText(output.getString("label"));
-                        fecha.setText(dateToString(LocalTime.now()));
-                        System.out.println(fecha);
-
-                        Bitmap bm = StringToBitMap(base64String);
-                        imageStream.setImageBitmap(bm);
-                }else{
-                   // textViewError.setText("Email or Password are incorrect, try again.");
-                }
-                /*fecha.setText(output.getString("fecha"));
-                */
-
-            } catch (JSONException jsonException) {
-                jsonException.printStackTrace();
-            }
         }
     }
 }
