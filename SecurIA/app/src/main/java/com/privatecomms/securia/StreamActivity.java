@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
@@ -28,6 +29,8 @@ import java.net.URLConnection;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -51,18 +54,7 @@ public class StreamActivity extends Activity {
         Bundle datosStream= this.getIntent().getExtras();
         String email = datosStream.getString("email");
 
-        String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
-        StreamActivity.GetXMLTask task = new StreamActivity.GetXMLTask();
-        task.execute(new String[] { urlLoginServlet });
-/**
-        try {
-            JSONObject j = task.get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-**/
+        setRepeatingAsyncTask(email);
 
         btnActualiza.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,16 +68,38 @@ public class StreamActivity extends Activity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /**
-                task.interrupt();
-                try {
-                    task.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }**/
                 finish();
             }
         });
+    }
+
+    private void setRepeatingAsyncTask(String email) {
+
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Runnable thread = new Runnable() {
+                    public void run() {
+                        try {
+                            String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
+                            StreamActivity.GetXMLTask xml_task = new StreamActivity.GetXMLTask();
+                            xml_task.execute(new String[] { urlLoginServlet });
+                        } catch (Exception e) {
+                            // error, do something
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                handler.post(thread);
+                handler.removeCallbacks(thread);
+            }
+        };
+
+        timer.schedule(task, 0, 10);  // interval of one minute
+
     }
 
     public Bitmap StringToBitMap(String encodedString) {
@@ -111,7 +125,6 @@ public class StreamActivity extends Activity {
 
         @Override
         protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
-             while (true) {
                  JSONObject output = null;
                  for (String url : urls) {
                      String json_string = getOutputFromUrl(url);
@@ -121,7 +134,7 @@ public class StreamActivity extends Activity {
                          jsonException.printStackTrace();
                      }
                  }
-             }
+                 return output;
         }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
@@ -131,8 +144,11 @@ public class StreamActivity extends Activity {
                 BufferedReader buffer = new BufferedReader(
                         new InputStreamReader(stream));
                 String s = "";
-                while ((s = buffer.readLine()) != null)
+                while (s != null) {
+                    s = buffer.readLine();
                     output.append(s);
+                }
+                stream.close();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -178,81 +194,5 @@ public class StreamActivity extends Activity {
             }
         }
     }
-
-
-
-
-
-/**
-    public class GetXMLTask extends Thread{
-        private String url;
-        private boolean cont;
-        public GetXMLTask(String url){
-            this.url = url;
-            this.cont = true;
-        }
-        public void run() {
-            JSONObject output = null;
-
-            while (!this.isInterrupted()) {
-                String json_string = getOutputFromUrl(url);
-                try {
-                    output = new JSONObject(json_string);
-                    System.out.println(output.length());
-
-                    if (output.getBoolean("success")) {
-                        String base64String = output.getString("stream");
-                        evento.setText(output.getString("label"));
-                        fecha.setText(dateToString(LocalTime.now()));
-                        System.out.println(fecha);
-
-                        Bitmap bm = StringToBitMap(base64String);
-                        imageStream.setImageBitmap(bm);
-                    } else {
-                        // textViewError.setText("Email or Password are incorrect, try again.");
-                    }
-
-                } catch (JSONException jsonException) {
-                    jsonException.printStackTrace();
-                }
-            }
-        }
-
-        private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
-            StringBuffer output = new StringBuffer("");
-            try {
-                InputStream stream = getHttpConnection(url);
-                BufferedReader buffer = new BufferedReader(
-                        new InputStreamReader(stream));
-                String s = "";
-                while ((s = buffer.readLine()) != null)
-                    output.append(s);
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-            return String.valueOf(output);
-        }
-
-
-        // Makes HttpURLConnection and returns InputStream
-        private InputStream getHttpConnection(String urlString)
-                throws IOException {
-            InputStream stream = null;
-            URL url = new URL(urlString);
-            URLConnection connection = url.openConnection();
-            try {
-                HttpURLConnection httpConnection = (HttpURLConnection) connection;
-                httpConnection.setRequestMethod("GET");
-                httpConnection.connect();
-                stream = httpConnection.getInputStream();
-                //if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                //}
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            return stream;
-        }
-    }**/
 }
 
