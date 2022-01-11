@@ -103,51 +103,35 @@ public class StreamActivity extends Activity {
             this.url = url;
             this.cont = true;
         }
+        public void run() {
+            JSONObject output = null;
 
-        public void run(){
+            while (true) {
+                String json_string = getOutputFromUrl(url);
                 try {
-                    synchronized (this) {
-                        wait(5000);
+                    output = new JSONObject(json_string);
+                    System.out.println(output.length());
 
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                JSONObject output = null;
+                    if (output.getBoolean("success")) {
+                        String base64String = output.getString("stream");
+                        evento.setText(output.getString("label"));
+                        fecha.setText(dateToString(LocalTime.now()));
+                        System.out.println(fecha);
 
-                                while (true) {
-                                    String json_string = getOutputFromUrl(url);
-                                    try {
-                                        output = new JSONObject(json_string);
-                                        System.out.println(output.length());
-
-                                        if (output.getBoolean("success")) {
-                                            String base64String = output.getString("stream");
-                                            evento.setText(output.getString("label"));
-                                            fecha.setText(dateToString(LocalTime.now()));
-                                            System.out.println(fecha);
-
-                                            Bitmap bm = StringToBitMap(base64String);
-                                            imageStream.setImageBitmap(bm);
-                                        } else {
-                                            // textViewError.setText("Email or Password are incorrect, try again.");
-                                        }
-
-                                    } catch (JSONException jsonException) {
-                                        jsonException.printStackTrace();
-                                    }
-                                }
-                            }
-
-                        });
+                        Bitmap bm = StringToBitMap(base64String);
+                        imageStream.setImageBitmap(bm);
+                    } else {
+                        // textViewError.setText("Email or Password are incorrect, try again.");
                     }
-                    } catch (InterruptedException e) {
-                    e.printStackTrace();
+
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
                 }
+            }
         }
 
 
-
-
+        }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
             StringBuffer output = new StringBuffer("");
@@ -163,6 +147,7 @@ public class StreamActivity extends Activity {
             }
             return String.valueOf(output);
         }
+
 
         // Makes HttpURLConnection and returns InputStream
         private InputStream getHttpConnection(String urlString)
