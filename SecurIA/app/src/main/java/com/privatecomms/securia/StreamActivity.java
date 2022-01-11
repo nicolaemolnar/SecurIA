@@ -51,8 +51,8 @@ public class StreamActivity extends Activity {
         String email = datosStream.getString("email");
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
-        GetXMLTask task = new GetXMLTask(urlLoginServlet);
-        task.start();
+        StreamActivity.GetXMLTask task = new StreamActivity.GetXMLTask();
+        task.execute(new String[] { urlLoginServlet });
 /**
         try {
             JSONObject j = task.get();
@@ -66,12 +66,13 @@ public class StreamActivity extends Activity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /**
                 task.interrupt();
                 try {
                     task.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
+                }**/
                 finish();
             }
         });
@@ -96,6 +97,70 @@ public class StreamActivity extends Activity {
     }
 
 
+    private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+
+        @Override
+        protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
+            while(true) {
+                JSONObject output = null;
+                for (String url : urls) {
+                    String json_string = getOutputFromUrl(url);
+                    try {
+                        output = new JSONObject(json_string);
+                        System.out.println("hola");
+                    } catch (JSONException jsonException) {
+                        jsonException.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
+            StringBuffer output = new StringBuffer("");
+            try {
+                InputStream stream = getHttpConnection(url);
+                BufferedReader buffer = new BufferedReader(
+                        new InputStreamReader(stream));
+                String s = "";
+                while ((s = buffer.readLine()) != null)
+                    output.append(s);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return String.valueOf(output);
+        }
+
+        // Makes HttpURLConnection and returns InputStream
+        private InputStream getHttpConnection(String urlString)
+                throws IOException {
+            InputStream stream = null;
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            try {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+                stream = httpConnection.getInputStream();
+                //if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                //}
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return stream;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
+
+        }
+    }
+
+
+
+
+
+/**
     public class GetXMLTask extends Thread{
         private String url;
         private boolean cont;
@@ -106,7 +171,7 @@ public class StreamActivity extends Activity {
         public void run() {
             JSONObject output = null;
 
-            while (true) {
+            while (!this.isInterrupted()) {
                 String json_string = getOutputFromUrl(url);
                 try {
                     output = new JSONObject(json_string);
@@ -128,9 +193,6 @@ public class StreamActivity extends Activity {
                     jsonException.printStackTrace();
                 }
             }
-        }
-
-
         }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
@@ -168,5 +230,6 @@ public class StreamActivity extends Activity {
             }
             return stream;
         }
-    }
+    }**/
 }
+
