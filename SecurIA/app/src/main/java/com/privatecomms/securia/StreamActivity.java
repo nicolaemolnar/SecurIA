@@ -34,7 +34,7 @@ import java.util.concurrent.TimeoutException;
 
 public class StreamActivity extends Activity {
 
-    private Button btnBack;
+    private Button btnBack, btnActualiza;
     TextView fecha, evento;
     ImageView imageStream;
 
@@ -43,6 +43,7 @@ public class StreamActivity extends Activity {
         setContentView(R.layout.stream_activity);
 
         this.btnBack = this.findViewById(R.id.btnBack);
+        this.btnActualiza = this.findViewById(R.id.btnActualiza);
         this.fecha = this.findViewById(R.id.fecha);
         this.evento = this.findViewById(R.id.evento);
         this.imageStream = this.findViewById(R.id.imageStream);
@@ -62,6 +63,15 @@ public class StreamActivity extends Activity {
             e.printStackTrace();
         }
 **/
+
+        btnActualiza.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
+                StreamActivity.GetXMLTask task2 = new StreamActivity.GetXMLTask();
+                task2.execute(new String[] { urlLoginServlet });
+            }
+        });
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
