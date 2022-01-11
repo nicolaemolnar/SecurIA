@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +20,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +46,14 @@ public class MainActivity extends AppCompatActivity {
         String email = datos.getString("email");
         System.out.println(email);
         String password = datos.getString("password");
+
+        /**CAMBIAR URL DE GetImagesServlet POR LA FUNCION QUE PONGAMOS**/
+
+       /**
+        String urlLoginServlet = "http://25.62.36.206:8080/securia/GetImagesServlet?email="+ email +"&device=android";
+        MainActivity.GetXMLTask task = new MainActivity.GetXMLTask();
+        task.execute(new String[] { urlLoginServlet });
+        **/
 
 
         //funciones de botones y switch de stream
@@ -137,6 +147,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
 
+            /**Iterator<String> iter = output.keys();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                try {
+                    Object value = output.get(key);
+                } catch (JSONException e) {
+                    // Something went wrong!
+                }
+            }**/
         }
     }
 }
