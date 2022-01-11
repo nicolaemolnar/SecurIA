@@ -90,7 +90,7 @@ public class StreamActivity extends Activity {
     }
 
     public String dateToString(LocalTime date){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH.mm.ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String timeString = date.format(formatter);
 
         return timeString;
@@ -101,18 +101,17 @@ public class StreamActivity extends Activity {
 
         @Override
         protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
-            while(true) {
-                JSONObject output = null;
-                for (String url : urls) {
-                    String json_string = getOutputFromUrl(url);
-                    try {
-                        output = new JSONObject(json_string);
-                        System.out.println("hola");
-                    } catch (JSONException jsonException) {
-                        jsonException.printStackTrace();
-                    }
-                }
-            }
+             while (true) {
+                 JSONObject output = null;
+                 for (String url : urls) {
+                     String json_string = getOutputFromUrl(url);
+                     try {
+                         output = new JSONObject(json_string);
+                     } catch (JSONException jsonException) {
+                         jsonException.printStackTrace();
+                     }
+                 }
+             }
         }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
@@ -152,7 +151,21 @@ public class StreamActivity extends Activity {
 
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
+            try {
+                if (output.getBoolean("success")) {
+                    String base64String = output.getString("stream");
+                    evento.setText(output.getString("label"));
+                    fecha.setText(dateToString(LocalTime.now()));
+                    System.out.println(fecha);
 
+                    Bitmap bm = StringToBitMap(base64String);
+                    imageStream.setImageBitmap(bm);
+                } else {
+                    // textViewError.setText("Email or Password are incorrect, try again.");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
