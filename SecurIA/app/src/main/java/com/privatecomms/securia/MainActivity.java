@@ -4,10 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,11 +24,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.time.LocalTime;
 import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
 
 
+    private ImageView imageView15,imageView16,imageView17,imageView18,imageView19,imageView20,imageView21,imageView22,imageView23;
     private Button btnConfig, btnExit, btnStream;
 
     @Override
@@ -49,11 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         /**CAMBIAR URL DE GetImagesServlet POR LA FUNCION QUE PONGAMOS**/
 
-       /**
+
         String urlLoginServlet = "http://25.62.36.206:8080/securia/GetImagesServlet?email="+ email +"&device=android";
         MainActivity.GetXMLTask task = new MainActivity.GetXMLTask();
         task.execute(new String[] { urlLoginServlet });
-        **/
+
 
 
         //funciones de botones y switch de stream
@@ -91,6 +97,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public Bitmap StringToBitMap(String encodedString) {
+        try {
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch (Exception e) {
+            e.getMessage();
+            return null;
+        }
     }
 
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
@@ -146,16 +163,30 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
+            //meter bucle while?
+            try {
+                if (output.getBoolean("success")) {
+                    String base64String = output.getString("image");
+
+                    Bitmap bm = StringToBitMap(base64String);
+                    imageView15.setImageBitmap(bm);
+
+                } else {
+                    // textViewError.setText("Email or Password are incorrect, try again.");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             /**Iterator<String> iter = output.keys();
-            while (iter.hasNext()) {
+             while (iter.hasNext()) {
                 String key = iter.next();
                 try {
                     Object value = output.get(key);
-                } catch (JSONException e) {
-                    // Something went wrong!
-                }
-            }**/
+             } catch (JSONException e) {
+                // Something went wrong!
+             }
+             }**/
         }
     }
 }

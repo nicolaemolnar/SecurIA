@@ -113,8 +113,6 @@ public class ConfigActivity extends Activity {
                     } else if (!fechaValida(brith)) {
                         textViewError.setText("Date is invalid");
                     } else {
-                        //comprobaciones: ninguno esta vacio, comprobar que las contrsaseñas son iguales, comprobar que la fecha es de tipo fecha
-
                         String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email=" + email + "&password=" + pass + "&password_conf=" + rpass + "&firstname=" + fir + "&surname=" + sur + "&phone=" + pho + "&birthdate=" + brith + "&getPhotos=" + Photos + "&canStream=" + Stream;
                         ConfigActivity.GetXMLTask task2 = new ConfigActivity.GetXMLTask();
                         task2.execute(new String[]{urlSetServlet});

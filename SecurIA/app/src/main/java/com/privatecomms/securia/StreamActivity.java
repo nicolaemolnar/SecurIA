@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 
 public class StreamActivity extends Activity {
 
-    private Button btnBack, btnActualiza;
+    private Button btnBack;
     TextView fecha, evento;
     ImageView imageStream;
 
@@ -46,7 +46,6 @@ public class StreamActivity extends Activity {
         setContentView(R.layout.stream_activity);
 
         this.btnBack = this.findViewById(R.id.btnBack);
-        this.btnActualiza = this.findViewById(R.id.btnActualiza);
         this.fecha = this.findViewById(R.id.fecha);
         this.evento = this.findViewById(R.id.evento);
         this.imageStream = this.findViewById(R.id.imageStream);
@@ -56,14 +55,6 @@ public class StreamActivity extends Activity {
 
         setRepeatingAsyncTask(email);
 
-        btnActualiza.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
-                StreamActivity.GetXMLTask task2 = new StreamActivity.GetXMLTask();
-                task2.execute(new String[] { urlLoginServlet });
-            }
-        });
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,7 +173,6 @@ public class StreamActivity extends Activity {
                     String base64String = output.getString("stream");
                     evento.setText(output.getString("label"));
                     fecha.setText(dateToString(LocalTime.now()));
-                    System.out.println(fecha);
 
                     Bitmap bm = StringToBitMap(base64String);
                     imageStream.setImageBitmap(bm);

@@ -49,26 +49,27 @@
         android:text="Event category:"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintHorizontal_bias="0.092"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.233" />
 
     <ImageView
         android:id="@+id/imageStream"
-        android:layout_width="312dp"
-        android:layout_height="329dp"
+        android:layout_width="396dp"
+        android:layout_height="397dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.363"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.611"
         tools:srcCompat="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/textView17"
-        android:layout_width="214dp"
-        android:layout_height="40dp"
+        android:layout_width="240dp"
+        android:layout_height="43dp"
         android:text="Streaming:"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -92,26 +93,14 @@
 
     <Button
         android:id="@+id/btnBack"
-        android:layout_width="119dp"
-        android:layout_height="73dp"
+        android:layout_width="213dp"
+        android:layout_height="41dp"
         android:text="Back to menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.448"
+        app:layout_constraintHorizontal_bias="0.861"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.855" />
-
-    <Button
-        android:id="@+id/btnActualiza"
-        android:layout_width="92dp"
-        android:layout_height="50dp"
-        android:text="Actualizar imagen"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.949"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.826" />
+        app:layout_constraintVertical_bias="0.005" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
