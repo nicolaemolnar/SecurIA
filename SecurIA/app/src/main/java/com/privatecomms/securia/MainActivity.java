@@ -193,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
                     image.setImageBitmap(bm);
 
                     gallery.addView(view);
+
                 }
             }catch (JSONException e) {
                 e.printStackTrace();
