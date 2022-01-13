@@ -55,7 +55,6 @@ public class Hilo extends Thread {
                 public void onSuccess(IMqttToken asyncActionToken) {
                     //If the connection is ok
                     Log.i(tag, "MQTT connected");
-                    System.out.println("MQTT connected");
                     //Suscribe the topics
                     suscripcionTopics(movement);
                 }
@@ -64,7 +63,6 @@ public class Hilo extends Thread {
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Something went wrong e.g. connection timeout or firewall problems
                     Log.i(tag, "Error connecting MQTT");
-                    System.out.println("Todo mal");
                 }
             });
         } catch (MqttException e) {e.printStackTrace();}
@@ -77,12 +75,13 @@ public class Hilo extends Thread {
             public void messageArrived(String topic, MqttMessage message) throws Exception
             {
                 //New alert from the wheater station
+                System.out.println(topic);
                 if(topic.contains("notifications") && (topic.contains(email))){
                     String mqttText = new String(message.getPayload());
                     Log.i(tag, "New Alert: + " + (new String(message.getPayload())));
 
                     //Create a notification with the alert
-                    //createNotificationChannel();
+                    createNotificationChannel();
                     createNotification(mqttText.split(";")[0],mqttText.split(";")[1]);
                 }
             }
@@ -91,17 +90,17 @@ public class Hilo extends Thread {
         });
     }
 
-   /** //Method to create the notification channel in new versions
-    private void createNotificationChannel(){
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
-        {
+   //Method to create the notification channel in new versions
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "Notificación";
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) activity.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
-**/
+
+
     //Method to create a notfication with the title and the message
     private void createNotification(String title, String msn){
         //Configure the notification
@@ -123,10 +122,10 @@ public class Hilo extends Thread {
     //MQTT topics to suscribe the application
     private void suscripcionTopics(String movement){
         try{
-            System.out.println("intento suscribirme");
+
             Log.i(tag, "notifications = " + movement);
             client.subscribe("/android/notifications/"+email,2);
-
+            System.out.println("suscrito a "+email);
 
 
         }catch (MqttException e){
