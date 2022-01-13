@@ -25,7 +25,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-public class Hilo extends AppCompatActivity {
+public class Hilo extends Thread {
 
     private MqttAndroidClient client;
     private final static String CHANNEL_ID = "stationId";
@@ -35,18 +35,18 @@ public class Hilo extends AppCompatActivity {
     private String camera = "camera";
 
     private String tag = "Hilo";
+    private MainActivity activity;
+    private String email;
 
-    public Hilo() {
+    public Hilo(MainActivity activity, String email) {
+        this.activity = activity;
+        this.email = email;
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-        //Configure the mqtt client who will send the notifications about the selected station
+    public void run() {
         String clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(this.getApplicationContext(), "tcp://192.168.1.131:1883", clientId);
+        client = new MqttAndroidClient(activity.getApplicationContext(), "tcp://192.168.1.131:1883", clientId);
 
         try {
             IMqttToken token = client.connect();
@@ -75,18 +75,13 @@ public class Hilo extends AppCompatActivity {
             public void messageArrived(String topic, MqttMessage message) throws Exception
             {
                 //New alert from the wheater station
-                if(topic.contains("alert")){
+                if(topic.contains("notifications") && (topic.contains(email))){
                     String mqttText = new String(message.getPayload());
                     Log.i(tag, "New Alert: + " + (new String(message.getPayload())));
 
                     //Create a notification with the alert
-                    createNotificationChannel();
-                    createNotification("Alert", mqttText);
-                }else{
-                    //The message is about a sensor type
-                    String mqttText = new String(message.getPayload());
-                    Log.i(tag, "New Message: + " + (new String(message.getPayload())));
-
+                    //createNotificationChannel();
+                    createNotification(mqttText.split(";")[0],mqttText.split(";")[1]);
                 }
             }
             @Override
@@ -94,7 +89,7 @@ public class Hilo extends AppCompatActivity {
         });
     }
 
-    //Method to create the notification channel in new versions
+   /** //Method to create the notification channel in new versions
     private void createNotificationChannel(){
         if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.O)
         {
@@ -104,11 +99,11 @@ public class Hilo extends AppCompatActivity {
             notificationManager.createNotificationChannel(notificationChannel);
         }
     }
-
+**/
     //Method to create a notfication with the title and the message
     private void createNotification(String title, String msn){
         //Configure the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),CHANNEL_ID);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(activity.getApplicationContext(),CHANNEL_ID);
         builder.setSmallIcon(R.drawable.securia_logo);
         builder.setContentTitle(title);
         builder.setContentText(msn);
@@ -119,17 +114,16 @@ public class Hilo extends AppCompatActivity {
         builder.setDefaults(Notification.DEFAULT_SOUND);
 
         //Show the notification
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(activity.getApplicationContext());
         notificationManagerCompat.notify(NOTIFICATION_ID, builder.build());
     }
 
     //MQTT topics to suscribe the application
     private void suscripcionTopics(String movement){
         try{
-            Log.i(tag, "movement = " + movement);
-            client.subscribe(movement,0);
-            client.subscribe(movement + "/alert",0);
-            client.subscribe(movement + "/sensor",0);
+            Log.i(tag, "notifications = " + movement);
+            client.subscribe("/android/notifications/"+email,2);
+
 
         }catch (MqttException e){
             e.printStackTrace();

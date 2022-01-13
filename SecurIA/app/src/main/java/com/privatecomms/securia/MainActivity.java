@@ -61,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
         String email = datos.getString("email");
         System.out.println(email);
 
+        Hilo hilo = new Hilo(this,email);
+        hilo.start();
 
         LinearLayout gallery = findViewById(R.id.gallery);
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -70,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         MainActivity.GetXMLTask task = new MainActivity.GetXMLTask();
         task.execute(new Object[] { urlLoginServlet,gallery,inflater });
 
-
+/**
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
             NotificationChannel channel = new NotificationChannel("myChannel", "My Channel", NotificationManager.IMPORTANCE_DEFAULT);
 
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         notification = builder.build();
 
         notificationManagerCompat = NotificationManagerCompat.from(this);
-
+**/
 
         //funciones de botones y switch de stream
         btnConfig.setOnClickListener(new View.OnClickListener() {
