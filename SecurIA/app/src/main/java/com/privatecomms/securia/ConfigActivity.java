@@ -35,7 +35,7 @@ public class ConfigActivity extends Activity {
 
     String fir, sur, pass, rpass, pho, brith;
 
-    boolean Photos, getVideo, Stream;
+    boolean Photos, Notifications, Stream;
     Switch sendNotifications,captureFotos,lifeStream;
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +113,9 @@ public class ConfigActivity extends Activity {
                     } else if (!fechaValida(brith)) {
                         textViewError.setText("Date is invalid");
                     } else {
-                        String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email=" + email + "&password=" + pass + "&password_conf=" + rpass + "&firstname=" + fir + "&surname=" + sur + "&phone=" + pho + "&birthdate=" + brith + "&getPhotos=" + Photos + "&canStream=" + Stream;
+                        String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email=" + email + "&password=" + pass + "&password_conf=" + rpass
+                                + "&firstname=" + fir + "&surname=" + sur + "&phone=" + pho + "&birthdate=" + brith
+                                + "&getPhotos=" + Photos + "&canStream=" + Stream + "&sendNotifications"+ Notifications;
                         ConfigActivity.GetXMLTask task2 = new ConfigActivity.GetXMLTask();
                         task2.execute(new String[]{urlSetServlet});
                         textViewError.setText("");
@@ -128,10 +130,10 @@ public class ConfigActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    //poner la parte de las notificaciones
+                    Photos=true;
                 }
                 else{
-
+                    Photos=false;
                 }
             }
         });
@@ -140,10 +142,10 @@ public class ConfigActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    Photos=true;
+                    Notifications=true;
                 }
                 else{
-                    Photos=false;
+                    Notifications=false;
                 }
             }
         });
@@ -231,9 +233,7 @@ public class ConfigActivity extends Activity {
                 httpConnection.setRequestMethod("GET");
                 httpConnection.connect();
                 stream = httpConnection.getInputStream();
-                //if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
-                //}
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -250,7 +250,7 @@ public class ConfigActivity extends Activity {
                 phone.setText(output.getString("phone"));
                 birthDate.setText(output.getString("birthdate"));
 
-                //sendNotifications.setChecked(output.getBoolean(""));
+                sendNotifications.setChecked(output.getBoolean("sendNotifications"));
                 captureFotos.setChecked(output.getBoolean("getPhotos"));
                 lifeStream.setChecked(output.getBoolean("canStream"));
 

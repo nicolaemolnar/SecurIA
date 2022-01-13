@@ -164,6 +164,7 @@ public class StreamActivity extends Activity {
             String json_string = getOutputFromUrl(urlStr);
             try {
                 output = new JSONObject(json_string);
+                activity.cambiaFrame(output);
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
 
@@ -179,10 +180,6 @@ public class StreamActivity extends Activity {
              Log.d(tag, "get json: " + response);
              JSONObject output = new JSONObject(response);
              **/
-
-            activity.cambiaFrame(output);
-
-
         }
 
         //Get the input strean and convert into String
