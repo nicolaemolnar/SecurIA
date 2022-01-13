@@ -164,7 +164,7 @@ public class StreamActivity extends Activity {
             String json_string = getOutputFromUrl(urlStr);
             try {
                 output = new JSONObject(json_string);
-                activity.cambiaFrame(output);
+                cambiaFrame(output);
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();
 

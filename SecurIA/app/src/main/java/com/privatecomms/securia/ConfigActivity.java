@@ -130,10 +130,10 @@ public class ConfigActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    Photos=true;
+                    Notifications=true;
                 }
                 else{
-                    Photos=false;
+                    Notifications=false;
                 }
             }
         });
@@ -142,10 +142,10 @@ public class ConfigActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    Notifications=true;
+                    Photos=true;
                 }
                 else{
-                    Notifications=false;
+                    Photos=false;
                 }
             }
         });
