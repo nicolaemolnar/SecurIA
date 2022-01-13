@@ -69,6 +69,7 @@ public class StreamActivity extends Activity {
         String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
 
         ServerConnectionThread task = new ServerConnectionThread(StreamActivity, urlLoginServlet);
+        task.start();
 
         //setRepeatingAsyncTask(email);
 
@@ -152,7 +153,7 @@ public class StreamActivity extends Activity {
         public ServerConnectionThread(StreamActivity activ, String url)    {
             activity = activ;
             urlStr = url;
-            start();
+            //start();
         }
 
         @Override

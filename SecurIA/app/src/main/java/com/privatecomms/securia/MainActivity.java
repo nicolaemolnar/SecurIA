@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 String imagenes = output.getString("img_count");
                 int n_imagenes = Integer.parseInt(imagenes);
 
-                for (int i = 0; i <= n_imagenes; i++) {
+                for (int i = 0; i < n_imagenes; i++) {
                     String[] imagen = output.getString(String.valueOf(i)).replace("]","").replace("[","").split(",");
                     String base64String = imagen[0];
                     String time = imagen[1];
