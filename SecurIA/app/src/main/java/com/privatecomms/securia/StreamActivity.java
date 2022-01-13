@@ -3,22 +3,30 @@ package com.privatecomms.securia;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.app.NotificationCompat;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +49,11 @@ public class StreamActivity extends Activity {
     TextView fecha, evento;
     ImageView imageStream;
 
+    final Handler handler = new Handler();
+    Timer timer = new Timer();
+
+    private StreamActivity StreamActivity;
+
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.stream_activity);
@@ -53,22 +66,23 @@ public class StreamActivity extends Activity {
         Bundle datosStream= this.getIntent().getExtras();
         String email = datosStream.getString("email");
 
-        setRepeatingAsyncTask(email);
+        String urlLoginServlet = "http://25.62.36.206:8080/securia/streaming?email="+ email;
 
+        ServerConnectionThread task = new ServerConnectionThread(StreamActivity, urlLoginServlet);
+
+        //setRepeatingAsyncTask(email);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                handler.removeCallbacksAndMessages(null);
                 finish();
             }
         });
     }
 
-    private void setRepeatingAsyncTask(String email) {
 
-        final Handler handler = new Handler();
-        Timer timer = new Timer();
-
+    /**private void setRepeatingAsyncTask(String email) {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
@@ -86,11 +100,29 @@ public class StreamActivity extends Activity {
                 };
                 handler.post(thread);
                 handler.removeCallbacks(thread);
+                handler.removeCallbacksAndMessages(null);
             }
         };
 
         timer.schedule(task, 0, 10);  // interval of one minute
 
+    }**/
+
+    private void cambiaFrame(JSONObject output){
+        try {
+            if (output.getBoolean("success")) {
+                String base64String = output.getString("stream");
+                evento.setText(output.getString("label"));
+                fecha.setText(dateToString(LocalTime.now()));
+
+                Bitmap bm = StringToBitMap(base64String);
+                imageStream.setImageBitmap(bm);
+            } else {
+                // textViewError.setText("Email or Password are incorrect, try again.");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public Bitmap StringToBitMap(String encodedString) {
@@ -112,7 +144,67 @@ public class StreamActivity extends Activity {
     }
 
 
-    private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+    private class ServerConnectionThread extends Thread{
+        private StreamActivity activity;
+        private String tag = "ServerConnectionThread";
+        private String urlStr = "";
+
+        public ServerConnectionThread(StreamActivity activ, String url)    {
+            activity = activ;
+            urlStr = url;
+            start();
+        }
+
+        @Override
+        public void run()    {
+            String response = "";
+            try {
+                URL url = new URL(urlStr);
+                HttpURLConnection urlConnection = null;
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                //Get the information from the url
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                response = convertStreamToString(in);
+                Log.d(tag, "get json: " + response);
+                JSONObject output = new JSONObject(response);
+
+                //Read Responses and fill the spinner
+                if(urlStr.contains("streaming")){
+                    activity.cambiaFrame(output);
+                }else{
+                    //error
+                }
+            }
+            catch (IOException | JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //Get the input strean and convert into String
+        private String convertStreamToString(InputStream is) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            StringBuilder sb = new StringBuilder();
+
+            String line = null;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append('\n');
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    /**private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
@@ -183,6 +275,8 @@ public class StreamActivity extends Activity {
                 e.printStackTrace();
             }
         }
-    }
+    }**/
+
+
 }
 

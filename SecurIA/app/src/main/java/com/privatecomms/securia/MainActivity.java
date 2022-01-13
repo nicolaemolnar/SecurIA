@@ -1,11 +1,17 @@
 package com.privatecomms.securia;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.LayoutInflater;
@@ -32,8 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     private Button btnConfig, btnExit, btnStream;
-    //LinearLayout gallery = findViewById(R.id.gallery);
-    //LayoutInflater inflater = LayoutInflater.from(this);
+
+    NotificationManagerCompat notificationManagerCompat;
+    Notification notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +71,22 @@ public class MainActivity extends AppCompatActivity {
         task.execute(new Object[] { urlLoginServlet,gallery,inflater });
 
 
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("myChannel", "My Channel", NotificationManager.IMPORTANCE_DEFAULT);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "myChannel")
+                .setSmallIcon(android.R.drawable.stat_notify_sync)
+                .setContentTitle("Notificacion")
+                .setContentText("Mensaje");
+
+        notification = builder.build();
+
+        notificationManagerCompat = NotificationManagerCompat.from(this);
+
 
         //funciones de botones y switch de stream
         btnConfig.setOnClickListener(new View.OnClickListener() {
@@ -81,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                notificationManagerCompat.notify(1, notification);
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);        // Specify any activity here e.g. home or splash or login etc
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -101,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
 
     public Bitmap StringToBitMap(String encodedString) {
         try {
