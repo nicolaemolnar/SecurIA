@@ -46,7 +46,7 @@ public class Hilo extends Thread {
     @Override
     public void run() {
         String clientId = MqttClient.generateClientId();
-        client = new MqttAndroidClient(activity.getApplicationContext(), "tcp://192.168.1.131:1883", clientId);
+        client = new MqttAndroidClient(activity.getApplicationContext(), "tcp://25.62.36.206:5555", clientId);
 
         try {
             IMqttToken token = client.connect();
@@ -55,6 +55,7 @@ public class Hilo extends Thread {
                 public void onSuccess(IMqttToken asyncActionToken) {
                     //If the connection is ok
                     Log.i(tag, "MQTT connected");
+                    System.out.println("MQTT connected");
                     //Suscribe the topics
                     suscripcionTopics(movement);
                 }
@@ -63,6 +64,7 @@ public class Hilo extends Thread {
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Something went wrong e.g. connection timeout or firewall problems
                     Log.i(tag, "Error connecting MQTT");
+                    System.out.println("Todo mal");
                 }
             });
         } catch (MqttException e) {e.printStackTrace();}
@@ -121,8 +123,10 @@ public class Hilo extends Thread {
     //MQTT topics to suscribe the application
     private void suscripcionTopics(String movement){
         try{
+            System.out.println("intento suscribirme");
             Log.i(tag, "notifications = " + movement);
             client.subscribe("/android/notifications/"+email,2);
+
 
 
         }catch (MqttException e){

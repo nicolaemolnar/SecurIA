@@ -32,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailAddress, password;
     String e,p;
 
-    String urlRegister ="http://25.62.36.206:8080/securia/register.html";
+    String urlRegister ="http://25.62.36.206:8080/securia/register.jsp";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
