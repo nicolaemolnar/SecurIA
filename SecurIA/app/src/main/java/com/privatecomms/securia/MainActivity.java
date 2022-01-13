@@ -9,9 +9,12 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,8 +33,10 @@ import java.util.Iterator;
 public class MainActivity extends AppCompatActivity {
 
 
-    private ImageView imageView15,imageView16,imageView17,imageView18,imageView19,imageView20,imageView21,imageView22,imageView23;
     private Button btnConfig, btnExit, btnStream;
+    LinearLayout gallery = findViewById(R.id.gallery);
+
+    LayoutInflater inflater = LayoutInflater.from(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +56,12 @@ public class MainActivity extends AppCompatActivity {
         //le paso los datos del usuario del inicio de sesion del login
         String email = datos.getString("email");
         System.out.println(email);
-        String password = datos.getString("password");
 
         /**CAMBIAR URL DE GetImagesServlet POR LA FUNCION QUE PONGAMOS**/
+
+       /** LinearLayout gallery = findViewById(R.id.gallery);
+
+        LayoutInflater inflater = LayoutInflater.from(this);**/
 
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/GetImagesServlet?email="+ email +"&device=android";
@@ -163,18 +171,34 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
-            //meter bucle while?
+
             try {
-                if (output.getBoolean("success")) {
-                    String base64String = output.getString("image");
+                String imagenes = output.getString("img_count");
+                int n_imagenes = Integer.parseInt(imagenes);
+
+
+                for (int i = 0; i <= n_imagenes; i++) {
+                    String base64String = output.getString("encoded_src");
+                    String time = output.getString("timestamp");
+                    String etiqueta = output.getString("label");
 
                     Bitmap bm = StringToBitMap(base64String);
-                    imageView15.setImageBitmap(bm);
 
-                } else {
-                    // textViewError.setText("Email or Password are incorrect, try again.");
+
+                    View view = inflater.inflate(R.layout.item, gallery, false);
+
+                    TextView timestamp = view.findViewById(R.id.timestamp);
+                    timestamp.setText(time);
+
+                    TextView label = view.findViewById(R.id.label);
+                    label.setText(etiqueta);
+
+                    ImageView image = view.findViewById(R.id.image);
+                    image.setImageBitmap(bm);
+
+                    gallery.addView(view);
                 }
-            } catch (JSONException e) {
+            }catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -187,6 +211,6 @@ public class MainActivity extends AppCompatActivity {
                 // Something went wrong!
              }
              }**/
+            }
         }
-    }
 }
