@@ -159,27 +159,30 @@ public class StreamActivity extends Activity {
         @Override
         public void run()    {
             String response = "";
+
+            JSONObject output = null;
+            String json_string = getOutputFromUrl(urlStr);
             try {
-                URL url = new URL(urlStr);
-                HttpURLConnection urlConnection = null;
-                urlConnection = (HttpURLConnection) url.openConnection();
+                output = new JSONObject(json_string);
+            } catch (JSONException jsonException) {
+                jsonException.printStackTrace();
 
-                //Get the information from the url
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                response = convertStreamToString(in);
-                Log.d(tag, "get json: " + response);
-                JSONObject output = new JSONObject(response);
+            }
+            /**
+             URL url = new URL(urlStr);
+             HttpURLConnection urlConnection = null;
+             urlConnection = (HttpURLConnection) url.openConnection();
 
-                //Read Responses and fill the spinner
-                if(urlStr.contains("streaming")){
-                    activity.cambiaFrame(output);
-                }else{
-                    //error
-                }
-            }
-            catch (IOException | JSONException e) {
-                e.printStackTrace();
-            }
+             //Get the information from the url
+             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+             response = convertStreamToString(in);
+             Log.d(tag, "get json: " + response);
+             JSONObject output = new JSONObject(response);
+             **/
+
+            activity.cambiaFrame(output);
+
+
         }
 
         //Get the input strean and convert into String
@@ -202,6 +205,44 @@ public class StreamActivity extends Activity {
                 }
             }
             return sb.toString();
+        }
+
+        private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
+            StringBuffer output = new StringBuffer("");
+            try {
+                InputStream stream = getHttpConnection(url);
+                BufferedReader buffer = new BufferedReader(
+                        new InputStreamReader(stream));
+                String s = "";
+                while (s != null) {
+                    s = buffer.readLine();
+                    output.append(s);
+                }
+                stream.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            return String.valueOf(output);
+        }
+
+        // Makes HttpURLConnection and returns InputStream
+        private InputStream getHttpConnection(String urlString)
+                throws IOException {
+            InputStream stream = null;
+            URL url = new URL(urlString);
+            URLConnection connection = url.openConnection();
+            try {
+                HttpURLConnection httpConnection = (HttpURLConnection) connection;
+                httpConnection.setRequestMethod("GET");
+                httpConnection.connect();
+                stream = httpConnection.getInputStream();
+                //if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+
+                //}
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return stream;
         }
     }
 
