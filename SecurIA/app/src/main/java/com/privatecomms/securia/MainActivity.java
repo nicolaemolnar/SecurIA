@@ -3,7 +3,6 @@ package com.privatecomms.securia;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,16 +25,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.time.LocalTime;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
 
     private Button btnConfig, btnExit, btnStream;
-    LinearLayout gallery = findViewById(R.id.gallery);
-
-    LayoutInflater inflater = LayoutInflater.from(this);
+    //LinearLayout gallery = findViewById(R.id.gallery);
+    //LayoutInflater inflater = LayoutInflater.from(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,16 +54,14 @@ public class MainActivity extends AppCompatActivity {
         String email = datos.getString("email");
         System.out.println(email);
 
-        /**CAMBIAR URL DE GetImagesServlet POR LA FUNCION QUE PONGAMOS**/
 
-       /** LinearLayout gallery = findViewById(R.id.gallery);
-
-        LayoutInflater inflater = LayoutInflater.from(this);**/
+        LinearLayout gallery = findViewById(R.id.gallery);
+        LayoutInflater inflater = LayoutInflater.from(this);
 
 
-        String urlLoginServlet = "http://25.62.36.206:8080/securia/GetImagesServlet?email="+ email +"&device=android";
+        String urlLoginServlet = "http://25.62.36.206:8080/securia/gallery?email="+email+"&device=android";
         MainActivity.GetXMLTask task = new MainActivity.GetXMLTask();
-        task.execute(new String[] { urlLoginServlet });
+        task.execute(new Object[] { urlLoginServlet,gallery,inflater });
 
 
 
@@ -118,20 +113,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
+    private class GetXMLTask extends AsyncTask<Object, Void, Object[]> {
 
         @Override
-        protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
+        protected Object[] doInBackground(Object... params) { //Leer respuesta del servidor (String del JSON)
             JSONObject output = null;
-            for (String url : urls) {
+            String url = String.valueOf(params[0]);
                 String json_string = getOutputFromUrl(url);
                 try {
                     output = new JSONObject(json_string);
                 } catch (JSONException jsonException) {
                     jsonException.printStackTrace();
                 }
-            }
-            return output;
+            return new Object[]{output,params[1],params[2]};
         }
 
         private String getOutputFromUrl(String url) { // Recibe la String(JSON) que nos envia el servidor
@@ -170,17 +164,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
-
+        protected void onPostExecute(Object[] params) { //Analizar el resultado pagian web y redirigir o mostrar error
+            JSONObject output = (JSONObject) params[0];
+            LinearLayout gallery = (LinearLayout) params[1];
+            LayoutInflater inflater = (LayoutInflater) params[2];
             try {
                 String imagenes = output.getString("img_count");
                 int n_imagenes = Integer.parseInt(imagenes);
 
-
                 for (int i = 0; i <= n_imagenes; i++) {
-                    String base64String = output.getString("encoded_src");
-                    String time = output.getString("timestamp");
-                    String etiqueta = output.getString("label");
+                    String[] imagen = output.getString(String.valueOf(i)).replace("]","").replace("[","").split(",");
+                    String base64String = imagen[0];
+                    String time = imagen[1];
+                    String etiqueta = imagen[2];
 
                     Bitmap bm = StringToBitMap(base64String);
 
