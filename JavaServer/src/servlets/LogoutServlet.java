@@ -22,7 +22,7 @@ public class LogoutServlet extends HttpServlet {
             session.removeAttribute(name);
         }
 
-        response.sendRedirect("/securia/index.html");
+        response.sendRedirect("/securia/");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -45,9 +45,16 @@ public class RegisterServlet extends HttpServlet {
         String phone_number = request.getParameter("phone_number");
         String birth_date = request.getParameter("birth_date");
 
-        Date date1 = Date.valueOf(Logic.formatDate(birth_date));
 
-        if (password.equals(request.getParameter("password2")) && date1.before(new Date(System.currentTimeMillis())) && !first_name.equals("admin")) {
+        boolean valid_date = true;
+        Date date1 = null;
+        if (!birth_date.isEmpty()){
+            date1 = Date.valueOf(Logic.formatDate(birth_date));
+            valid_date = date1.before(new Date(System.currentTimeMillis()));
+        }
+
+
+        if (password.equals(request.getParameter("password2")) && valid_date && !first_name.equals("admin")) {
             // Obtain connection to database
             DBConnection db = new DBConnection("postgres","123456");
 
@@ -58,11 +65,12 @@ public class RegisterServlet extends HttpServlet {
                     // Insert user into database
                     if (db.register(username, first_name, email, password, surname, phone_number, date1)){
                         // If user was inserted successfully, redirect to login page
-                        response.sendRedirect("/securia/index.html");
+                        response.sendRedirect("/securia/");
                     }
                     else{
                         // If user was not inserted successfully, redirect to error page
-                        response.sendRedirect("/securia/error.jsp?error=register&cause=already_exists");
+                        request.getSession().setAttribute("error", "Email already exists. Choose another one.");
+                        response.sendRedirect("/securia/register.jsp");
                     }
                 }
                 // Close the connection to the database
@@ -72,7 +80,8 @@ public class RegisterServlet extends HttpServlet {
         }
     }
     else{
-        response.sendRedirect("/securia/error.jsp?error=register&cause=date_or_password");
+        request.getSession().setAttribute("error", "Passwords do not match or you are under 0 years old.");
+        response.sendRedirect("/securia/register.jsp");
     }
     }
 }

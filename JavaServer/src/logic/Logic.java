@@ -5,8 +5,7 @@ import mqtt.MQTTBroker;
 import mqtt.MQTTPublisher;
 import mqtt.MQTTSubscriber;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -14,10 +13,12 @@ import java.util.HashMap;
 
 public class Logic {
     public static String imagePath = "/securia/Images/";
+    public static String dbBin = "C:\\Program Files\\PostgreSQL\\14\\bin\\";
+    public static String dbPath = "C:\\Program Files\\PostgreSQL\\14\\data\\";
+    public static String tomcatPath = "C:\\xampp\\tomcat\\webapps";
     public static MQTTBroker mqttBroker;
     public static MQTTSubscriber mqttSubscriber;
-    public static MQTTPublisher mqttPublisher;
-    public static HashMap<String, String[]> streams;
+    public static HashMap<String, String> streams;
 
     public static String formatDate(String date) {
         String[] dateSplit = date.split("-");
@@ -121,6 +122,171 @@ public class Logic {
         }
 
         return images;
+    }
+
+    public static void update_postgres_state(String command){
+        try {
+            ProcessBuilder pb = new ProcessBuilder(dbBin + "pg_ctl", command, "-D", dbPath);
+            pb.start();
+            Log.log.info("Postgres started");
+        } catch (IOException e) {
+            Log.log.error("Could not start postgres. Cause: " + e.getMessage());
+        }
+    }
+
+    public static boolean is_db_connected(){
+        try {
+            ProcessBuilder pb = new ProcessBuilder(dbBin + "pg_ctl", "status", "-D", dbPath);
+            Process p = pb.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("server is running")) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            Log.log.error("Could not check if postgres is running. Cause: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public static boolean allows_notifications(int system_id) {
+        boolean allow_notifications = false;
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Check if system allows notifications
+            allow_notifications = db.allows_notifications(system_id);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not check if system allows notifications. Cause:" + e.getMessage());
+        }
+        return allow_notifications;
+    }
+
+    public static void add_alert(int system_id, String title, String description) {
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Add alert to db
+            db.add_alert(system_id, title, description);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not add alert to db. Cause:" + e.getMessage());
+        }
+    }
+
+    public static boolean person_detected(int system_id) {
+        boolean person_detected = false;
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Check if person detected
+            person_detected = db.person_detected(system_id);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not check if person detected. Cause:" + e.getMessage());
+        }
+        return person_detected;
+    }
+
+    public static int get_system_id(String camera_id) {
+        int system_id = -1;
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Get system id
+            system_id = db.get_system_id(camera_id);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not get system id. Cause:" + e.getMessage());
+        }
+        return system_id;
+    }
+
+    public static boolean capture_photos(int system_id) {
+        boolean capture_photos = false;
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Check if person detected
+            capture_photos = db.capture_photos(system_id);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not check if person detected. Cause:" + e.getMessage());
+        }
+        return capture_photos;
+    }
+
+    public static void delete_alert(int id) {
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Delete alert
+            db.delete_alert(id);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not delete alert. Cause:" + e.getMessage());
+        }
+    }
+
+    public static String get_label(String camera_id) {
+        String label = "";
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Get label
+            label = db.get_label(camera_id);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not get label. Cause:" + e.getMessage());
+        }
+        return label;
+    }
+
+    public static void set_label(String camera_id, String label) {
+        // Obtain DB connection
+        DBConnection db = new DBConnection("postgres","123456");
+        try {
+            db.obtainConnection();
+
+            // Set label
+            db.set_label(camera_id, label);
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.logdb.error("Could not set label. Cause:" + e.getMessage());
+        }
     }
 }
 

@@ -47,7 +47,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Escritorio/jar_files/json-20210307.jar!/" />
+          <root url="jar://C:/xampp/tomcat/webapps/securia/WEB-INF/lib/json-20210307.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -56,7 +56,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Escritorio/apache-log4j-2.17.1-bin/log4j-api-2.17.1.jar!/" />
+          <root url="jar://C:/xampp/tomcat/webapps/securia/WEB-INF/lib/log4j-api-2.17.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -65,7 +65,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../Escritorio/apache-log4j-2.17.1-bin/log4j-core-2.17.1.jar!/" />
+          <root url="jar://C:/xampp/tomcat/webapps/securia/WEB-INF/lib/log4j-core-2.17.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -6,6 +6,7 @@ import logic.Logic;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -28,9 +29,17 @@ public class MQTTSubscriber implements MqttCallback {
             // Example topics: "sensor/movement/1", "sensor/presence/1", "sensor/camera/1/Image", "sensor/camera/1/Streaming"
 
             // Get all the sensor's topics
-            HashMap<String,Integer> sensors = dbConnection.getSensors();
-            for (String sensor : sensors.keySet()) {
-                topics.add("/sensor/"+sensor+"/"+sensors.get(sensor));
+            HashMap<String,Boolean> sensors = dbConnection.getSensors();
+            ArrayList<Integer> system_ids = dbConnection.get_system_ids();
+            for (String sensor_type: sensors.keySet()) {
+                String topic = "/sensor/" + sensor_type + "/";
+                String sensor_id = "";
+                if (!sensors.get(sensor_type)) {
+                    sensor_id = "#";
+                }
+                for (int system_id : system_ids) {
+                    topics.add("/sensor/" + sensor_type + "/" + system_id +"/"+sensor_id);
+                }
             }
 
             // Get all the camera's topics
@@ -38,7 +47,7 @@ public class MQTTSubscriber implements MqttCallback {
             for (String camera : cameras) {
                 topics.add("/sensor/camera/"+camera+"/Image");
                 topics.add("/sensor/camera/"+camera+"/Streaming");
-                Logic.streams.put(camera, new String[]{"",""});
+                Logic.streams.put(camera, "");
             }
 
             // Subscribe to all the topics the server needs
@@ -89,24 +98,53 @@ public class MQTTSubscriber implements MqttCallback {
 
         String topic = topics[2];
 
-        // TODO: Handle the message arrival and treat data accordingly
+        // Handle the message arrival and treat data accordingly
         switch (topic) {
             case "movement":
-                int measurement = Integer.parseInt(mqttMessage.getPayload().toString());
-                int sensor_id = Integer.parseInt(topics[3]);
-                // TODO: Save the measurement in the database
+                int sensor_id = Integer.parseInt(topics[4]);
+                // Check if user allows notifications
+                int system_id = Integer.parseInt(topics[3]);
+                if (Logic.allows_notifications(system_id)) {
+                    // If allowed, store notification in the database
+                    Logic.add_alert(system_id, "Movement detected" ,"Movement detected in sensor "+sensor_id);
+                    Log.logmqtt.info("Notified movement detection in sensor "+sensor_id);
+                }
+                break;
+            case "proximity":
+                system_id = Integer.parseInt(topics[3]);
+                // Check if user allows notifications and the camera didn't detect any person
+                if (Logic.allows_notifications(system_id) && !Logic.person_detected(system_id)) {
+                    // If allowed, store notification in the database
+                    Logic.add_alert(system_id, "Possible attack detected!" ,"We strongly believe your camera is being covered!!");
+                    Log.logmqtt.info("Notified possible attack detected in system "+system_id);
+                }
+
                 break;
             case "camera":
                 if (topics[4].equals("Image")) {
+                    // Decode base64 image payload
                     String image_str = mqttMessage.toString();
+                    system_id = Logic.get_system_id(topics[3]);
                     byte[] image_bytes = Base64.getDecoder().decode(image_str);
-                    Log.logmqtt.info("Image received: " + image_bytes.length);
-                    //String image_path = Logic.add_image(Logic.imagePath, image_bytes, "jpg", topics[3]);
-                    //Log.logmqtt.info("Image saved in: " + image_path);
+                    Log.logmqtt.info("Image received with size: " + image_bytes.length);
+
+                    if (Logic.capture_photos(system_id)) {
+                        String image_path = Logic.add_image(Logic.imagePath, image_bytes, "jpg", topics[3]);
+                        Log.logmqtt.info("Image saved in: " + image_path);
+                    }
+
+                    // Check if user allows notifications
+                    if (Logic.allows_notifications(system_id)) {
+                        // If allowed, store notification in the database
+                        Logic.add_alert(system_id, "Image received" ,"There is a person at your door.");
+                        Log.logmqtt.info("Notified "+system_id+" owner for received image");
+                    }
                 }else if (topics[4].equals("Streaming")) {
                     String image_str = mqttMessage.toString();
-                    Logic.streams.get(topics[3])[0] = image_str;
-                    Logic.streams.get(topics[3])[1] = "detected";
+                    Logic.streams.put(topics[3], image_str);
+                }else if (topics[4].equals("Label")) {
+                    String label_str = mqttMessage.getPayload().toString();
+                    Logic.set_label(topics[3], label_str);
                 }
                 break;
             default:

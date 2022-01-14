@@ -36,7 +36,8 @@ public class ContactServlet extends HttpServlet {
         try {
             db.obtainConnection();
         }catch (Exception e){
-            response.sendRedirect("/securia/error.jsp?error=database");
+            request.getSession().setAttribute("error", "Error connecting to database");
+            Log.logdb.error("Error connecting to database");
         }
 
         // Insert contact into database
@@ -46,14 +47,16 @@ public class ContactServlet extends HttpServlet {
 
         // Redirect to confirmation page if successful
         if (validContact){
-            response.sendRedirect("/securia/confirmationPage"); // Page to confirm insertion
+            request.getSession().setAttribute("success", "Contact successfully sent");
             Log.log.info("Added contact from "+email+" to database");
         }else{
-            response.sendRedirect("/securia/error.jsp?error=contact");
+            request.getSession().setAttribute("error", "Error sending contact, information is not valid");
             Log.log.info("Failed to add contact from "+email+" to database");
         }
 
         // TODO Close connection to database
         db.closeConnection();
+
+        response.sendRedirect("/securia/contact.jsp");
     }
 }

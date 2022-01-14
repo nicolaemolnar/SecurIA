@@ -30,7 +30,7 @@ public class MQTTPublisher {
                     client.disconnect();
                     Log.logmqtt.info("Disconnected from MQTT Broker");
                 }catch (MqttException e){
-                    e.printStackTrace();
+                    Log.logmqtt.error("Error while publishing message to topic: " + topic+". Cause: "+e.getCause());
         }
     }
 }

@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
 
             // Create response JSON
             JSONObject json = new JSONObject();
-            json.put("successful_login", !username.equals(""));
+            json.put("successful_login", !username.equals("") && !username.equals("admin"));
 
             // Send JSON response
             response.setContentType("application/json");
@@ -51,6 +51,13 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("email", email);
                 if (username.equals("admin")) {
+                    // Check if mqtt is online
+                    request.getSession().setAttribute("mqtt", Logic.mqttSubscriber.isConnected());
+
+                    // Check if database is online
+                    request.getSession().setAttribute("database", Logic.is_db_connected());
+
+                    // Redirect to the admin page
                     response.sendRedirect("/securia/admin.jsp");
                 }else {
                     response.sendRedirect("/securia/dashboard.jsp");
@@ -58,7 +65,8 @@ public class LoginServlet extends HttpServlet {
                 Log.log.info("Login successful for user: " + username);
             } else{
                 // If the user is not valid, redirect to the login page
-                response.sendRedirect("/securia/error.jsp?error=login");
+                request.getSession().setAttribute("error", "Invalid email or password");
+                response.sendRedirect("/securia/");
                 Log.log.info("Login failed for user: " + username);
             }
         }catch (SQLException e){

@@ -77,7 +77,7 @@ public class GetSettingsServlet extends HttpServlet {
                 Log.log.info("Settings obtained successfully for user with email: " + email);
             }
             else{
-                // If user was not inserted successfully, redirect to error page
+                // If a database error occurs, redirect to error page
                 response.sendRedirect("/securia/error.jsp?error=settings");
                 Log.log.error("The user with email: " + email + " is not related to any settings");
             }

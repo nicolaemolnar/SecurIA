@@ -1,6 +1,7 @@
 package servlets;
 
 import database.DBConnection;
+import logic.Log;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,6 +35,7 @@ public class DeleteImageServlet extends HttpServlet {
         // delete image from file system
         File image = new File(path);
         image.delete();
+        Log.log.info("Deleted image on path "+path);
 
         response.sendRedirect("/securia/gallery?device=web");
     }

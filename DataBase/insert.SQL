@@ -1,6 +1,6 @@
 /*
 Created: 26/11/2021
-Modified: 26/11/2021
+Modified: 13/01/2021
 Model: PostgreSQL 11
 Database: PostgreSQL 11
 */
@@ -28,133 +28,43 @@ INSERT INTO public.user(
 
 -- Table System ---------------------------------------------------------------
 INSERT INTO public.system(
-	system_id, capture_photos, capture_videos, live_streaming)
-	VALUES ('1', 'True', 'True', 'True');
+	system_id, capture_photos, send_notifications, live_streaming, email)
+	VALUES ('1', 'True', 'True', 'True', 'nicolae.molnar@edu.uah.es');
 	
 INSERT INTO public.system(
-	system_id, capture_photos, capture_videos, live_streaming)
-	VALUES ('2', 'True', 'True', 'True');
+	system_id, capture_photos, send_notifications, live_streaming, email)
+	VALUES ('2', 'True', 'True', 'True', 'alberto.estevez@edu.uah.es');
 	
 INSERT INTO public.system(
-	system_id, capture_photos, capture_videos, live_streaming)
-	VALUES ('3', 'True', 'False', 'True');
+	system_id, capture_photos, send_notifications, live_streaming, email)
+	VALUES ('3', 'True', 'False', 'True', 'alvaro.barragan@edu.uah.es');
 	
 INSERT INTO public.system(
-	system_id, capture_photos, capture_videos, live_streaming)
-	VALUES ('4', 'True', 'True', 'True');
-
--- Table Configurations --------------------------------------------------------
-INSERT INTO public.configurations(
-	email, system_id)
-	VALUES ('nicolae.molnar@edu.uah.es', '1');
-
-INSERT INTO public.configurations(
-    email, system_id)
-    VALUES ('alvaro.barragan@edu.uah.es', '2');
-
-INSERT INTO public.configurations(
-    email, system_id)
-    VALUES ('alberto.estevez@edu.uah.es', '3');
-
-INSERT INTO public.configurations(
-    email, system_id)
-    VALUES ('eduardo.garzo@edu.uah.es', '4');
-
--- Table Alert ---------------------------------------------------------------
-INSERT INTO public.alert(
-	id, title, description)
-	VALUES ('1', 'Movement detected', 'Movement detected in the room 1');
-
-INSERT INTO public.alert(
-    id, title, description)
-    VALUES ('2', 'Movement detected', 'Movement detected in the room 2');
-
-INSERT INTO public.alert(
-    id, title, description)
-    VALUES ('3', 'Body detected', 'Body detected at the door');
-
-INSERT INTO public.alert(
-    id, title, description)
-    VALUES ('4', 'Person detected', 'Person detected at the door');
-
-INSERT INTO public.alert(
-    id, title, description)
-    VALUES ('5', 'Insufficient light', 'Light sensor detects a low light source');
-
-INSERT INTO public.alert(
-    id, title, description)
-    VALUES ('6', 'Camera covered', 'Detected low light source while a body is close to the door');
-
--- Table allow_notifications ---------------------------------------------------
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('1', '1', 'True');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('1', '2', 'False');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('1', '3', 'True');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('1', '4', 'True');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('1', '5', 'True');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('1', '6', 'True');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('2', '1', 'True');
-
-INSERT INTO public.allow_notifications(
-    system_id, alert_id, enabled)
-    VALUES ('2', '2', 'False');
+	system_id, capture_photos, send_notifications, live_streaming, email)
+	VALUES ('4', 'True', 'True', 'True', 'eduardo.garzo@edu.uah.es');
 
 -- Table Camera ---------------------------------------------------------------
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('camera_1', 'Main door', 'True', '1');
+    VALUES ('camera_1', 'Main door', 'Undetected', '1');
 
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('camera_2', 'Main door', 'False', '2');
+    VALUES ('camera_2', 'Main door', 'Undetected', '2');
 
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('camera_3', 'Main door', 'False', '3');
+    VALUES ('camera_3', 'Main door', 'Undetected', '3');
 
 INSERT INTO public.camera(
     camera_id, name, detection, system_id)
-    VALUES ('camera_4', 'Main door', 'False', '4');
+    VALUES ('camera_4', 'Main door', 'Undetected', '4');
 
--- Table camera_event ----------------------------------------------------------
-INSERT INTO public.camera_event(
-    id, camera_id, system_id)
-    VALUES ('1', 'camera_1', '1');
-
-
--- Table Sensor_type ----------------------------------------------------------
+-- Table Sensor_type ---------------------------------------------------------------
 INSERT INTO public.sensor_type(
-    type, name, description, units, min_value, max_value, alert_value, enabled)
-    VALUES ('1', 'Light Sensor', 'LDR Sensor', '', '0', '1024', '300', 'True');
+	id, type, unique_per_system)
+	VALUES ('0', 'proximity', 'True');
 
 INSERT INTO public.sensor_type(
-    type, name, description, units, min_value, max_value, alert_value, enabled)
-    VALUES ('2', 'Proximity Sensor', 'UltraSonic Distance Sensor', 'cm', '0', '1024', '100', 'True');
-
-INSERT INTO public.sensor_type(
-    type, name, description, units, min_value, max_value, alert_value, enabled)
-    VALUES ('3', 'Movement Sensor', 'Infrared Sensor', '', '0', '1', '1', 'True');
-
--- Table sensor_event ---------------------------------------------------------
-INSERT INTO public.sensor_event(
-    type, id)
-    VALUES ('1', '3');
+	id, type, unique_per_system)
+	VALUES ('1', 'movement', 'False');

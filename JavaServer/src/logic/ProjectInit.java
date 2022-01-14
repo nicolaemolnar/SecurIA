@@ -17,12 +17,10 @@ public class ProjectInit implements ServletContextListener {
         Log.log.info("Initializing the server...");
         Logic.streams = new HashMap<>();
         Logic.mqttBroker = new MQTTBroker("SecurIA Central Broker", "localhost", 5555, 2);
-        Log.log.info("MQTT Broker created");
+        Log.logmqtt.info("MQTT Broker created");
         Logic.mqttSubscriber = new MQTTSubscriber(Logic.mqttBroker);
-        Log.log.info("MQTT Subscriber created");
+        Log.logmqtt.info("MQTT Subscriber created");
         Logic.mqttSubscriber.searchTopicsToSubscribe();
-        /*MQTTPublisher mqttPub = new MQTTPublisher();
-        Log.log.info("MQTT Publisher created");*/
     }
 
     @Override

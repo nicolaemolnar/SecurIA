@@ -2,11 +2,15 @@ package database;
 
 import logic.Image;
 import logic.Log;
+import logic.Logic;
 import org.postgresql.jdbc.*;
 
 import javax.xml.transform.Result;
+import java.io.File;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -130,27 +134,38 @@ public class DBConnection {
             // Check if email already exists in database
             if (!csmt.executeQuery("SELECT FROM public.user WHERE email = '" + email + "'").next()) {
                 // Insert new user into database
+                String birth_date_str = "null";
+                if (birth_date != null) {
+                    birth_date_str = "'" + birth_date + "'";
+                }
                 String query = "INSERT INTO public.user (email, password, first_name, surname, phone_number, birth_date)" +
-                        "VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone + "', '" + birth_date + "')";
+                        "VALUES ('" + email + "', '" + password + "', '" + first_name + "', '" + surname + "', '" + phone + "', " + birth_date_str + ")";
                 csmt.execute(query);
                 Log.logdb.info("Inserted user with email " + email + " into database.");
 
-                // Create a new system configuration for him
+                // Create a new system configuration for the user
                 int next_id = 0;
                 ResultSet rs = csmt.executeQuery("SELECT MAX(system_id) from public.system");
                 if (rs.next()) {
                     next_id = rs.getInt(1) + 1;
                 }
 
-                String query2 = "INSERT INTO public.system (system_id, capture_photos, capture_videos, live_streaming)" +
-                        "VALUES (" + next_id + ", true, true, true)";
+                String query2 = "INSERT INTO public.system (system_id, capture_photos, send_notifications, live_streaming, email)" +
+                        "VALUES (" + next_id + ", true, true, true, '" + email + "')";
                 csmt.execute(query2);
                 Log.logdb.info("Inserted system configuration with id " + next_id + " into database.");
 
-                String relation = "INSERT INTO public.configurations (email, system_id)" +
-                        "VALUES ('" + email + "', '" + next_id + "')";
-                csmt.execute(relation);
-                Log.logdb.info("Inserted relation between user and system configuration into database.");
+                // Create new camera for the user
+                int next_id2 = 0;
+                ResultSet rs2 = csmt.executeQuery("SELECT MAX(camera_id) from public.camera");
+                if (rs2.next()) {
+                    next_id2 = Integer.parseInt(rs2.getString(1).split("_")[1]) + 1;
+                }
+
+                String query3 = "INSERT INTO public.camera (camera_id, name, detection, system_id)" +
+                        "VALUES ('camera_" + next_id2 + "', '" + "Main door" + "', 'false', '" + next_id + "')";
+                csmt.execute(query3);
+                Log.logdb.info("Inserted camera with id " + next_id2 + " into database.");
 
                 success = true;
             }
@@ -204,25 +219,50 @@ public class DBConnection {
             // Begin transaction
             beginTransaction(csmt);
 
-            // Obtain the system configuration ids related to the user
-            ResultSet rs = csmt.executeQuery("SELECT system_id FROM public.configurations WHERE email = '" + email + "'");
+            // Delete all the systems associated with the user
+            // Obtain the systems associated with the user
+            String query = "SELECT system_id FROM public.system WHERE email = '" + email + "'";
+            ResultSet rs = csmt.executeQuery(query);
+
             ArrayList<Integer> system_ids = new ArrayList<>();
             while (rs.next()) {
-                system_ids.add(rs.getInt(1));
+                system_ids.add(rs.getInt("system_id"));
             }
+            rs.close();
 
-            // Delete all configurations related to the user
-            csmt.execute("DELETE FROM public.configurations WHERE email = '" + email + "'");
-
-            // Delete the account from the database
-            String query = "DELETE FROM public.user WHERE email = '" + email + "';";
-            csmt.execute(query);
-
-            // Delete the system configurations from the database
             for (int system_id : system_ids) {
-                query = "DELETE FROM public.system WHERE system_id = '" + system_id + "';";
-                csmt.execute(query);
+                // Obtain all the images associated with the system
+                String query2 = "SELECT * FROM public.image WHERE system_id = " + system_id;
+                ResultSet rs2 = csmt.executeQuery(query2);
+                while (rs2.next()){
+                    int image_id = rs2.getInt("image_id");
+                    // Delete image from system's storage
+                    File image = new File(Logic.tomcatPath + "\\securia\\Images\\" + image_id + ".jpg");
+                    image.delete();
+
+                    // Delete image from database
+                    delete_image(rs2.getString("path"));
+                }
+
+                rs2.close();
+
+                // Delete all the cameras associated with the system
+                String query3 = "DELETE FROM public.camera WHERE system_id = " + system_id;
+                csmt.execute(query3);
+
+                // Delete all the alerts associated with the system
+                String query4 = "DELETE FROM public.alert WHERE system_id = " + system_id;
+                csmt.execute(query4);
+
+
+                String query5 = "DELETE FROM public.system WHERE system_id = " + system_id;
+                csmt.execute(query5);
             }
+
+            // Delete user's account
+            String query6 = "DELETE FROM public.user WHERE email = '" + email + "'";
+            csmt.execute(query6);
+
             // Commit transaction
             closeTransaction(csmt);
             Log.logdb.info("Deleted account with email '" + email + " from database. Author:" + csmt.getConnection());
@@ -234,16 +274,16 @@ public class DBConnection {
         }
     }
 
-    public HashMap<String, Integer> getSensors() {
+    public HashMap<String, Boolean> getSensors() {
         ResultSet rs = null;
-        HashMap<String, Integer> sensors = new HashMap<>();
+        HashMap<String, Boolean> sensors = new HashMap<>();
         try (Statement csmt = connection.createStatement()) {
             String query = "SELECT * FROM public.sensor_type; ";
             rs = csmt.executeQuery(query);
             Log.logdb.info("Executed Select from connection " + csmt.getConnection());
 
             while (rs.next()) {
-                sensors.put(rs.getString("name"), rs.getInt("type"));
+                sensors.put(rs.getString("type"), rs.getBoolean("unique_per_system"));
             }
         } catch (SQLException e) {
             Log.logdb.error("Error getting sensors from database." + e.getMessage());
@@ -257,7 +297,7 @@ public class DBConnection {
         ArrayList<String> cameras = new ArrayList<>();
         try (Statement csmt = connection.createStatement()) {
 
-            String query = "SELECT * FROM public.camera;";
+            String query = "SELECT camera_id FROM public.camera;";
             rs = csmt.executeQuery(query);
             Log.logdb.info("Connection " + csmt.getConnection() + " obtained all the cameras in the database.");
 
@@ -267,9 +307,7 @@ public class DBConnection {
                 } catch (SQLException e) {
                     Log.logdb.error("Error getting a camera from database. Skipping due to:" + e.getMessage());
                 }
-                cameras.add(rs.getString("name"));
             }
-
         } catch (SQLException e) {
             cameras.clear();
             Log.logdb.error("Error getting cameras from database." + e.getMessage());
@@ -283,7 +321,7 @@ public class DBConnection {
 
         // Get the settings from the database
         try (Statement csmt = connection.createStatement()) {
-            ResultSet res = csmt.executeQuery("SELECT * FROM public.user natural join public.configurations natural join public.system " +
+            ResultSet res = csmt.executeQuery("SELECT * FROM public.user natural join public.system " +
                     "WHERE  email ='" + email + "';");
             Log.logdb.info("Executed Select from connection " + csmt.getConnection());
 
@@ -296,7 +334,7 @@ public class DBConnection {
                 settings.put("phone", res.getString("phone_number"));
                 settings.put("birthdate", res.getString("birth_date"));
                 settings.put("getPhotos", String.valueOf(res.getBoolean("capture_photos")));
-                settings.put("getVideos", String.valueOf(res.getBoolean("capture_videos")));
+                settings.put("sendNotifications", String.valueOf(res.getBoolean("send_notifications")));
                 settings.put("canStream", String.valueOf(res.getBoolean("live_streaming")));
             }
         } catch (SQLException e) {
@@ -307,7 +345,7 @@ public class DBConnection {
         return settings;
     }
 
-    public boolean setSettings(String email, String password, String firstname, String surname, String phone, String birthdate, Boolean getPhotos, Boolean getVideos, Boolean canStream) {
+    public boolean setSettings(String email, String password, String firstname, String surname, String phone, String birthdate, Boolean getPhotos, Boolean sendNotifications, Boolean canStream) {
         // Prepare SQL call
         Statement csmt = null;
         boolean success = false;
@@ -331,7 +369,7 @@ public class DBConnection {
                 csmt.execute(query);
 
                 // Obtain system_id
-                res = csmt.executeQuery("SELECT * FROM public.configurations where email='" + email + "';");
+                res = csmt.executeQuery("SELECT system_id FROM public.system where email='" + email + "';");
                 int system_id = -1;
                 if (res.next()) {
                     system_id = res.getInt("system_id");
@@ -339,7 +377,7 @@ public class DBConnection {
 
                 // Update system information
                 String query2 = "UPDATE public.system SET capture_photos=" + getPhotos +
-                        ", capture_videos=" + getVideos +
+                        ", send_notifications=" + sendNotifications +
                         ", live_streaming=" + canStream +
                         " WHERE system_id='" + system_id + "';";
                 csmt.execute(query2);
@@ -361,7 +399,7 @@ public class DBConnection {
 
     public int get_image_id() {
         // Prepare SQL call
-        int image_id = 1;
+        int image_id = 0;
 
         try (Statement csmt = connection.createStatement()) {
             // Get the image_id
@@ -376,21 +414,40 @@ public class DBConnection {
         return image_id;
     }
 
+    public ArrayList<Integer> get_system_ids(){
+        // Prepare SQL call
+        ArrayList<Integer> system_ids = new ArrayList<>();
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the image_id
+            ResultSet res = csmt.executeQuery("SELECT system_id FROM public.system;");
+            while (res.next()) {
+                system_ids.add(res.getInt("system_id"));
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting system_ids." + e.getMessage());
+        }
+        return system_ids;
+    }
+
     public void add_image(int image_id, String path, String camera_id) throws SQLException {
         // Prepare SQL call
         Statement csmt = connection.createStatement();
 
         // Obtain system_id associated with the camera_id
-        String query = "SELECT system_id FROM public.camera WHERE camera_id='" + camera_id + "';";
+        String query = "SELECT system_id,detection FROM public.camera WHERE camera_id='" + camera_id + "';";
 
         ResultSet res = csmt.executeQuery(query);
         int system_id = -1;
+        String label = "detected";
         if (res.next()) {
             system_id = res.getInt("system_id");
+            label = res.getString("detection");
         }
 
         // Add the image to the database
-        query = "INSERT INTO public.image (image_id,camera_id,system_id, path, label, timestamp) VALUES (" + image_id + ", '" + camera_id + "', '" + system_id + "', '" + path + "', 'detected', '" + new Timestamp(System.currentTimeMillis()) + "');";
+        query = "INSERT INTO public.image (image_id,camera_id,system_id, path, label, timestamp) VALUES (" + image_id + ", '" + camera_id + "', '" + system_id + "', '" + path + "','"+label+"','" + new Timestamp(System.currentTimeMillis()) + "');";
 
         // Execute the query
         csmt.execute(query);
@@ -405,7 +462,7 @@ public class DBConnection {
 
         try (Statement csmt = connection.createStatement()) {
             // Get the image_id
-            ResultSet res = csmt.executeQuery("SELECT * FROM public.image natural join public.configurations WHERE email='" + email + "';");
+            ResultSet res = csmt.executeQuery("SELECT * FROM public.image natural join public.camera natural join public.system WHERE email='" + email + "';");
             while (res.next()) {
                 images.add(new Image(res.getString("path"),
                         res.getString("label"),
@@ -435,7 +492,7 @@ public class DBConnection {
 
         try (Statement csmt = connection.createStatement()) {
             // Get the image_id
-            ResultSet res = csmt.executeQuery("SELECT camera_id FROM public.configurations natural join public.camera WHERE email='" + email + "';");
+            ResultSet res = csmt.executeQuery("SELECT camera_id FROM public.system natural join public.camera WHERE email='" + email + "';");
             if (res.next()) {
                 camera_id = res.getString("camera_id");
             }
@@ -444,5 +501,198 @@ public class DBConnection {
             Log.logdb.error("Error getting camera_id from db. Cause:" + e.getMessage());
         }
         return camera_id;
+    }
+
+    public String execute(String query) {
+        // Prepare SQL call
+        String result = "| ";
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the image_id
+            ResultSet res = csmt.executeQuery(query);
+            for (int column = 0; column < res.getMetaData().getColumnCount(); column++) {
+                result += res.getMetaData().getColumnName(column + 1) + " | ";
+            }
+            result += "\n";
+
+            if (res.next()) {
+                // Add the result to the string as a table
+                do {
+                    result += "| ";
+                    for (int column = 0; column < res.getMetaData().getColumnCount(); column++) {
+                        result += String.valueOf(res.getObject(column + 1)) + " | ";
+                    }
+                    result += "\n";
+                }while (res.next());
+            }
+        } catch (SQLException e) {
+            result = "Error executing query. Cause: "+e.getMessage();
+            Log.logdb.error(result);
+        }
+        return result;
+    }
+
+    public ArrayList<String> get_alerts(String email){
+        ArrayList<String> alerts = new ArrayList<>();
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT * FROM public.alert NATURAL JOIN public.system WHERE email='" + email + "' ORDER BY timestamp DESC;");
+
+            while (res.next()) {
+                alerts.add(res.getInt("id")+";"+res.getString("title")+";"+res.getString("description")+";"+res.getString("timestamp"));
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting alerts from db. Cause:" +
+                    e.getMessage());
+        }
+        return alerts;
+    }
+
+    public boolean allows_notifications(int system_id) {
+        // Prepare SQL call
+        boolean result = false;
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT send_notifications FROM public.system WHERE system_id=" + system_id + ";");
+
+            if (res.next()) {
+                result = res.getBoolean("send_notifications");
+            }
+
+            res.close();
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting alert permission from db. Cause:" +
+                    e.getMessage());
+        }
+        return result;
+    }
+
+    public void add_alert(int system_id, String title, String description) {
+        // Prepare SQL call
+        try (Statement csmt = connection.createStatement()) {
+
+            // Get the last alert_id from the database
+            ResultSet res = csmt.executeQuery("SELECT MAX(id) FROM public.alert;");
+            int alert_id = 1;
+            if (res.next()) {
+                alert_id = res.getInt("max") + 1;
+            }
+            res.close();
+
+            csmt.execute("INSERT INTO public.alert (id, system_id, title, description, timestamp) VALUES (" + alert_id + "," + system_id + ", '" + title + "', '" + description + "','" + new Timestamp(System.currentTimeMillis()) + "');");
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error adding alert to db. Cause:" + e.getMessage());
+        }
+    }
+
+    public boolean person_detected(int system_id) {
+        // Prepare SQL call
+        boolean result = false;
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT * FROM public.alert WHERE system_id=" + system_id + ";");
+
+            LocalDateTime current_time = LocalDateTime.now();
+            // Look for the alert with closes timestamp to current time
+            while (res.next() && !result) {
+                LocalDateTime alert_time = res.getTimestamp("timestamp").toLocalDateTime();
+                String alert_title = res.getString("title");
+
+                // Obtain the seconds between the current time and the alert time
+                long seconds = ChronoUnit.SECONDS.between(alert_time, current_time);
+
+                if (alert_title.contains("Image") && seconds < 3) {
+                    result = true;
+                }
+
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting alert permission from db. Cause:" +
+                    e.getMessage());
+        }
+        return result;
+    }
+
+    public int get_system_id(String camera_id) {
+        // Prepare SQL call
+        int result = 0;
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT system_id FROM public.camera WHERE camera_id='" + camera_id + "';");
+
+            if (res.next()) {
+                result = res.getInt("system_id");
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting system_id from db. Cause:" +
+                    e.getMessage());
+        }
+        return result;
+    }
+
+    public boolean capture_photos(int system_id) {
+        // Prepare SQL call
+        boolean result = false;
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT capture_photos FROM public.system WHERE system_id=" + system_id + ";");
+
+            if (res.next()) {
+                result = res.getBoolean("capture_photos");
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting capture_photos from db. Cause:" +
+                    e.getMessage());
+        }
+        return result;
+    }
+
+    public void delete_alert(int id) {
+        // Prepare SQL call
+        try (Statement csmt = connection.createStatement()) {
+            csmt.execute("DELETE FROM public.alert WHERE id=" + id + ";");
+        } catch (SQLException e) {
+            Log.logdb.error("Error deleting alert from db. Cause:" +
+                    e.getMessage());
+        }
+    }
+
+    public String get_label(String camera_id) {
+        // Prepare SQL call
+        String result = "";
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT detection FROM public.camera WHERE camera_id='" + camera_id + "';");
+
+            if (res.next()) {
+                result = res.getString("detection");
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting label from db. Cause:" +
+                    e.getMessage());
+        }
+        return result;
+    }
+
+    public void set_label(String camera_id, String label) {
+        // Prepare SQL call
+        try (Statement csmt = connection.createStatement()) {
+            csmt.execute("UPDATE public.camera SET detection='" + label + "' WHERE camera_id='" + camera_id + "';");
+        } catch (SQLException e) {
+            Log.logdb.error("Error setting label from db. Cause:" +
+                    e.getMessage());
+        }
     }
 }
