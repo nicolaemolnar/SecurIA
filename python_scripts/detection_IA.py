@@ -20,7 +20,7 @@ period = 5
 
 streaming = True
 # Setup MQTT Broker
-MQTT_SERVER = "172.22.55.31"
+MQTT_SERVER = "25.62.36.206"
 MQTT_TOPIC = "Image"
 MQTT_PORT = 5555
 
@@ -31,20 +31,25 @@ MQTT_STREAMING = "Streaming"
 MQTT_LABEL = "Label"
 
 # Setup MQTT Subscriber
-MQTT_SUB_PATH = "/sensor/"
-MQTT_STREAM = "Stream"
-MQTT_NIGHT = "Night"
+MQTT_CAN_STREAM = "canStream"
 
-# Create MQTT Subscriber
-mqtt_sub = mqtt.Client()
-mqtt_sub.connect(MQTT_SERVER, MQTT_PORT, 60)
-mqtt_sub.subscribe(MQTT_PATH+MQTT_STREAM)
 
 # Define callback function for MQTT Subscriber
 def on_message(client, userdata, message):
     global streaming
-    if message.payload.decode() == "True":
+    msg = message.payload.decode()
+    if msg == "True":
         streaming = True
+    elif msg == "False":
+        streaming = False
+
+
+# Create MQTT Subscriber
+mqtt_sub = mqtt.Client()
+mqtt_sub.connect(MQTT_SERVER, MQTT_PORT, 60)
+mqtt_sub.subscribe(MQTT_PATH+MQTT_CAN_STREAM)
+mqtt_sub.on_message = on_message
+
 
 night = False
 brightness = 150
@@ -52,6 +57,10 @@ brightness = 150
 prev = time.time()
 
 while True:
+    
+    mqtt_sub.loop_start()
+
+    # Subscribe to MQTT CAN_STREAM topic    
     img = cap.read()[1]
     original = img.copy()
 
@@ -85,13 +94,11 @@ while True:
 
         # Encode image using base64
         base64_bytes = base64.b64encode(byteArr)
-        
+        publish.single(MQTT_PATH+MQTT_LABEL, record, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT, retain=False)
+
         if(streaming):
                     publish.single(MQTT_PATH+MQTT_STREAMING, base64_bytes , hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
-                    publish.single(MQTT_LABEL, record, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
-                    print("Streaming")
-                    print("Image sent to stream")
-                    #streaming = False
+                    print("Streaming...")
     except:
         print("Coulnd't send stream frame")
 
@@ -108,10 +115,7 @@ while True:
 
         try:
             if (time.time() - prev > period):
-                publish.single(MQTT_PATH+MQTT_TOPIC, base64_bytes, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
-                publish.single(MQTT_LABEL, record, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT)
-                print("Detected face at "+str(datetime.now().strftime("%d/%m/%Y, %H:%M:%S")))
-                print("Image sent to server")
+                publish.single(MQTT_PATH+MQTT_TOPIC, base64_bytes, hostname=MQTT_SERVER, port=MQTT_PORT, client_id=MQTT_CLIENT, qos=2, retain=False)
                 prev = time.time()
         except:
             print("Error connecting to broker")            

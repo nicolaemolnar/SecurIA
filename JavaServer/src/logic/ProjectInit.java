@@ -21,6 +21,7 @@ public class ProjectInit implements ServletContextListener {
         Logic.mqttSubscriber = new MQTTSubscriber(Logic.mqttBroker);
         Log.logmqtt.info("MQTT Subscriber created");
         Logic.mqttSubscriber.searchTopicsToSubscribe();
+
     }
 
     @Override

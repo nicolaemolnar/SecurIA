@@ -1,16 +1,16 @@
 # include <WiFi.h>
 # include <PubSubClient.h>
 
-# define WIFI_SSID "MOVISTAR_8CC0"
-# define WIFI_PASS "7Y6L7o7wUfvB6GAC32Ns"
+# define WIFI_SSID "Tomy Panini"
+# define WIFI_PASS "Alberto7"
 # define SYSTEM_ID "1"
 
-const char* mqttServer = "172.22.55.31";
+const char* mqttServer = "192.168.43.24";
 const int mqttPort = 5555;
 const int n_ir_sensors = 1;
 
 int ldr_pin = 35;
-int light_threshold = 150;
+int light_threshold = 100;
 
 int ir_pin[] = {39};
 int ir_length;
@@ -158,7 +158,7 @@ void setup_light_sensor(int ldr_pin){
 bool detect_movement(int ir_pin){
     int val = digitalRead(ir_pin);
     //Serial.println(val);
-    return val;
+    return !val;
 }
 
 bool can_see_entity(int ldr_pin, int threshold){

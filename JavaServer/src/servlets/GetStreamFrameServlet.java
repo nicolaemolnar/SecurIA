@@ -37,15 +37,9 @@ public class GetStreamFrameServlet extends HttpServlet {
            /** MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_id + "/Stream", "True");
             Log.log.error("/sensor/camera/" + camera_id + "/Stream", "True");**/
 
-
-            HashMap<String, String> settings = new HashMap<String, String>();
-            settings=db.getSettings(email);
-
-           if(settings.get("canStream")=="true"){
-               stream = Logic.streams.get(camera_id);
-               if (stream != null) {
-                   json.put("stream", stream);
-               }
+           stream = Logic.streams.get(camera_id);
+           if (stream != null) {
+               json.put("stream", stream);
            }
         }catch (SQLException e){
             Log.log.error("Error obtaining stream frame from server. Cause:"+e.getMessage());

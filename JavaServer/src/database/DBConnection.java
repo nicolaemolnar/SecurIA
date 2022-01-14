@@ -462,7 +462,7 @@ public class DBConnection {
 
         try (Statement csmt = connection.createStatement()) {
             // Get the image_id
-            ResultSet res = csmt.executeQuery("SELECT * FROM public.image natural join public.camera natural join public.system WHERE email='" + email + "';");
+            ResultSet res = csmt.executeQuery("SELECT * FROM public.image natural join public.camera natural join public.system WHERE email='" + email + "' ORDER BY timestamp DESC ;");
             while (res.next()) {
                 images.add(new Image(res.getString("path"),
                         res.getString("label"),
@@ -694,5 +694,24 @@ public class DBConnection {
             Log.logdb.error("Error setting label from db. Cause:" +
                     e.getMessage());
         }
+    }
+
+    public String get_user_email(int system_id) {
+        // Prepare SQL call
+        String result = "";
+
+        try (Statement csmt = connection.createStatement()) {
+            // Get the list of the enabled alerts linked to the email
+            ResultSet res = csmt.executeQuery("SELECT email FROM public.system WHERE system_id='" + system_id + "';");
+
+            if (res.next()) {
+                result = res.getString("email");
+            }
+
+        } catch (SQLException e) {
+            Log.logdb.error("Error getting email from db. Cause:" +
+                    e.getMessage());
+        }
+        return result;
     }
 }

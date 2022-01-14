@@ -183,6 +183,26 @@ public class Logic {
         }catch (SQLException e){
             Log.logdb.error("Could not add alert to db. Cause:" + e.getMessage());
         }
+
+        // Publisher for android notifications
+        // Obtain user email from db
+        String email = "";
+        try {
+            db.obtainConnection();
+
+            // Get user email
+            email = db.get_user_email(system_id);
+
+            if (email != "") {
+                // Send notification to email
+                MQTTPublisher.publish(Logic.mqttBroker, "/android/notifications/"+email, title + "; " + description);
+            }
+
+            // Close DB connection
+            db.closeConnection();
+        }catch (SQLException e){
+            Log.log.error("Could not get user email. Cause:" + e.getMessage());
+        }
     }
 
     public static boolean person_detected(int system_id) {
@@ -286,6 +306,15 @@ public class Logic {
             db.closeConnection();
         }catch (SQLException e){
             Log.logdb.error("Could not set label. Cause:" + e.getMessage());
+        }
+    }
+
+    public static void toggleStream(Boolean canStream, String email, DBConnection db) {
+        String camera_id = db.get_camera(email);
+        if (canStream) {
+            MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_id + "/canStream", "True");
+        }else{
+            MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_id + "/canStream", "False");
         }
     }
 }

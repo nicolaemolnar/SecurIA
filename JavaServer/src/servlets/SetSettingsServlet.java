@@ -40,6 +40,7 @@ public class SetSettingsServlet extends HttpServlet {
 
             json.put("success", db.setSettings(email, password, first_name, last_name, phone_number, birth_date, capturePhotos, sendNotifications, canStream));
 
+            Logic.toggleStream(canStream,email, db);
 
         }catch (SQLException e) {
             Log.log.error("Error setting settings for user with email: " + email+". Cause:"+e.getMessage());
@@ -51,16 +52,6 @@ public class SetSettingsServlet extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(json.toString());
-
-        String camera_id = db.get_camera(email);
-        if (canStream) {
-            MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_id + "/canStream", "Se  dabilitado el stream de la camara: "+camera_id);
-            Log.log.error("/sensor/camera/" + camera_id + "/Streaming", "True");
-        }else{
-            MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_id + "/canStream", "Se ha deshabilitado el stream de la camara: "+camera_id);
-
-
-        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -82,16 +73,7 @@ public class SetSettingsServlet extends HttpServlet {
                 if (db.setSettings(email, password, first_name, last_name, phone_number, birth_date, capturePhotos, sendNotifications, canStream)){
                     request.getSession().setAttribute("email", email);
 
-                    String camera_idPost = db.get_camera(email);
-                    if (canStream) {
-                        MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_idPost + "/canStream", "Se  dabilitado el stream de la camara: "+camera_idPost);
-                        Log.log.error("/sensor/camera/" + camera_idPost + "/Streaming", "True");
-                    }else{
-                        MQTTPublisher.publish(Logic.mqttBroker,"/sensor/camera/" + camera_idPost + "/canStream", "Se ha deshabilitado el stream de la camara: "+camera_idPost);
-
-
-                    }
-
+                    Logic.toggleStream(canStream,email, db);
                 }else{
                     request.getSession().setAttribute("error", "Some of the data provided is invalid");
                     Log.log.error("Error saving new changes for user with email: " + email);

@@ -47,6 +47,7 @@ public class MQTTSubscriber implements MqttCallback {
             for (String camera : cameras) {
                 topics.add("/sensor/camera/"+camera+"/Image");
                 topics.add("/sensor/camera/"+camera+"/Streaming");
+                topics.add("/sensor/camera/"+camera+"/Label");
                 Logic.streams.put(camera, "");
             }
 
@@ -143,7 +144,8 @@ public class MQTTSubscriber implements MqttCallback {
                     String image_str = mqttMessage.toString();
                     Logic.streams.put(topics[3], image_str);
                 }else if (topics[4].equals("Label")) {
-                    String label_str = mqttMessage.getPayload().toString();
+                    String label_str = mqttMessage.toString();
+                    Log.logmqtt.info("Label received: "+label_str);
                     Logic.set_label(topics[3], label_str);
                 }
                 break;
