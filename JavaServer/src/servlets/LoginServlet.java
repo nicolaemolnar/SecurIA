@@ -51,12 +51,6 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("email", email);
                 if (username.equals("admin")) {
-                    // Check if mqtt is online
-                    request.getSession().setAttribute("mqtt", Logic.mqttSubscriber.isConnected());
-
-                    // Check if database is online
-                    request.getSession().setAttribute("database", Logic.is_db_connected());
-
                     // Redirect to the admin page
                     response.sendRedirect("/securia/admin.jsp");
                 }else {

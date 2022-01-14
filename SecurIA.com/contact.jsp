@@ -1,4 +1,8 @@
-<%  Object email = session.getAttribute("email"); %>
+<% Object email = session.getAttribute("email");
+   String email_str = String.valueOf(email); %>
+
+
+
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -13,24 +17,24 @@
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <% if (email != null) { 
                     out.println("<li><a href=\"dashboard.jsp\" class=\"nav-link px-2\">Dashboard</a></li>");
-                    out.println("<li><a href=\"gallery.jsp\" class=\"nav-link px-2\">Gallery</a></li>");
+                    out.println("<li><a href=\"gallery?device=web\" class=\"nav-link px-2\">Gallery</a></li>");
                     out.println("<li><a href=\"streaming.jsp\" class=\"nav-link px-2\">Streaming</a></li>");
                 }
                 %>
                 <li><a href="contact.jsp" class="nav-link px-2 text-secondary">Contact us</a></li>
                 <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
-                <% if (email != null) { out.println("<li><a href=\"get_settings\" class=\"nav-link px-2\">Settings</a></li>"); } %>
+                <% if (email != null) { out.println("<li><a href=\"get_settings?email="+email+"&device=web\" class=\"nav-link px-2\">Settings</a></li>"); } %>
             </ul>
     
             <div class="text-end">
                 <% 
                
                 if(email != null) {
-                    out.println(String.valueOf(session.getAttribute("email")).split("@")[0]); 
+                    out.println(email_str.split("@")[0]); 
                     out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='logout'\">Log out</button>");
                 } else {
-                    out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='index.html'\">Log In</button>");
-                    out.println("<button type=\"button\" class=\"btn btn-outline-light btn-warning\" onclick=\"location.href='register.html'\">Sign-up</button>");
+                    out.println("<button type=\"button\" class=\"btn btn-outline-light me-2\" onclick=\"location.href='logout'\">Log In</button>");
+                    out.println("<button type=\"button\" class=\"btn btn-outline-light btn-warning\" onclick=\"location.href='register.jsp'\">Sign-up</button>");
                 }
                 %>
                 
@@ -85,15 +89,18 @@
                                 </div>
                             </form>
                             <div id="form-message-warning mt-4"></div>
-                                <div id="form-message-success" hidden=True>
-                                    Your message was sent, thank you!
-                                </div>
+                                <% if(session.getAttribute("success") != null){
+                                    out.println("<p style='color:green'> Message sent successfully!</p>");
+                                }else if (session.getAttribute("error") != null){
+                                    out.println("<p style='color:red'> Message not sent, something went wrong...</p>");
+                                } 
+                                session.removeAttribute("success");
+                                session.removeAttribute("error");
+                                %>
                             </div>
                         </div>
-                        <div class="col-md-6" style="border: 1px solid;">
-                            <a href="https://www.google.es/maps/place/UAH+-+Escuela+Polit%C3%A9cnica,+28805+Alcal%C3%A1+de+Henares,+Madrid/@40.5130493,-3.3509179,17.03z/data=!3m1!5s0xd424be52f764da1:0x555c9fe9196e69fc!4m5!3m4!1s0xd424be52f804d97:0x56581b9eb6489911!8m2!3d40.5131582!4d-3.3505356" target="_blank">
-                                <div class="contact-info h-100" style="background-image:url(ubiUAH.jpg)"></div>
-                            </a>    
+                        <div class="col-md-6" style="border: 1px solid; padding: 0;">
+                            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3033.2914241651893!2d-3.3509179!3d40.5130493!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd424be52f804d97%3A0x56581b9eb6489911!2sUAH%20-%20Escuela%20Polit%C3%A9cnica%2C%2028805%20Alcal%C3%A1%20de%20Henares%2C%20Madrid!5e0!3m2!1ses!2ses!4v1641900388077!5m2!1ses!2ses" style="border:0; width: 100%; height: 100%;" allowfullscreen="" loading="lazy"></iframe>
                         </div>
                     </div>
                 </div>

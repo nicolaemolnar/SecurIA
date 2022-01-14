@@ -1,3 +1,12 @@
+<% Object email = session.getAttribute("email");
+   String email_str = String.valueOf(email); 
+    if (email == null){%>
+<script>
+    window.location.href = "logout";
+</script>
+<% } %>
+
+
 <!DOCTYPE html>
 <head>
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -10,11 +19,11 @@
                 
             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                 <li><a href="dashboard.jsp" class="nav-link px-2">Dashboard</a></li>
-                <li><a href="gallery.jsp" class="nav-link px-2">Gallery</a></li>
+                <li><a href="gallery?device=web" class="nav-link px-2">Gallery</a></li>
                 <li><a href="streaming.jsp" class="nav-link px-2">Streaming</a></li>
                 <li><a href="contact.jsp" class="nav-link px-2">Contact us</a></li>
                 <li><a href="about.jsp" class="nav-link px-2">About us</a></li>
-                <li><a href="get_settings" class="nav-link px-2 text-secondary">Settings</a></li>
+                <% out.println("<li><a href=\"get_settings?email="+email+"&device=web\" class=\"nav-link px-2 text-secondary\">Settings</a></li>"); %>
             </ul>
 
             <script type="text/javascript" language="javaScript">
@@ -27,7 +36,7 @@
 
             <div class="text-end">
               <form action="delete_account" method="post" id="deleteForm">
-                <% String username = String.valueOf(session.getAttribute("email")).split("@")[0];
+                <% String username = email_str.split("@")[0];
                   out.println("<input type='hidden' name='email' value='" + session.getAttribute("email") + "'>");
                   out.println("<button type='button' onclick='confirmDeletion()' class='btn btn-outline-light bg-danger me-2'>Delete "+username+"</button>");
                 %>
@@ -40,6 +49,12 @@
       </header>
 </head>
 <body>
+  <div id="form-message-warning mt-4">
+    <% if (session.getAttribute("error") != null){
+       out.println("<div class='alert alert-danger' role='alert'>"+session.getAttribute("error")+"</div>");
+       session.removeAttribute("error");
+     } %>
+ </div>
   <div class="container rounded-3 py-2 mt-5" style="border: 1px solid;">
     <div class="content">
         <div class="container">
@@ -51,17 +66,17 @@
                         <div class="row mt-3 mx-3">
                             <div class="form-group mb-3">
                                 <label for="" class="col-form-label ">Email </label>
-                                <% out.println("<input type='email' required class='form-control' name='email' value='" + session.getAttribute("email") + "' placeholder='example@email.com'>"); %>
+                                <% out.println("<input type='email' required class='form-control' name='email' value='" + session.getAttribute("email") + "' placeholder='example@email.com' readonly>"); %>
                             </div>
                         </div>
                         <div class="row mx-3">
                             <div class="col-md-6 form-group mb-3">
                                 <label for="" class="col-form-label ">Password</label>
-                                <% out.println("<input type='text' required class='form-control' name='password' value='"+session.getAttribute("password")+"' placeholder='Your password'>"); %>
+                                <% out.println("<input type='password' required class='form-control' name='password' value='"+session.getAttribute("password")+"' placeholder='Your password'>"); %>
                             </div>
                             <div class="col-md-6 form-group mb-3">
                                 <label for="" class="col-form-label ">Confirm password</label>
-                                <% out.println("<input type='text' required class='form-control' name='password_conf' value='"+session.getAttribute("password")+"' placeholder='Confirm your password'>"); %>
+                                <% out.println("<input type='password' required class='form-control' name='password_conf' value='"+session.getAttribute("password")+"' placeholder='Confirm your password'>"); %>
                             </div>
                         </div>
                         <div class="row mx-3">
@@ -92,15 +107,15 @@
                         <div class="row mx-3">
                           <div class="col-md-5 form-group mb-3">
                             <label for="getPhotos" class="">Capture photos</label>
-                            <% out.println("<input type='checkbox' name='getPhotos' "+ ((String.valueOf(session.getAttribute("getPhotos")) == "true")? "checked":"") +">"); %>
+                            <% out.println("<input type='checkbox' name='getPhotos' value='true' "+ ((String.valueOf(session.getAttribute("getPhotos")) == "true")? "checked":"") +">"); %>
                           </div>
                           <div class="col-md-5 form-group mb-3">
-                            <label for="getVideos" class="">Capture videos</label>
-                            <% out.println("<input type='checkbox' name='getVideos' "+ ((String.valueOf(session.getAttribute("getVideos"))=="true")? "checked":"") +">"); %>
+                            <label for="sendNotifications" class="">Send notifications</label>
+                            <% out.println("<input type='checkbox' name='sendNotifications' value='true' "+ ((String.valueOf(session.getAttribute("sendNotifications"))=="true")? "checked":"") +">"); %>
                           </div>
                           <div class="col-md-2 form-group mb-3">
                             <label for="canStream" class="">Live Streaming</label>
-                            <% out.println("<input type='checkbox' name='canStream' "+ ((String.valueOf(session.getAttribute("canStream"))=="true")? "checked":"") +">"); %>
+                            <% out.println("<input type='checkbox' name='canStream' value='true' "+ ((String.valueOf(session.getAttribute("canStream"))=="true")? "checked":"") +">"); %>
                           </div>
                         </div>
                       </div>  
@@ -111,11 +126,6 @@
                             </div>
                         </div>
                     </form>
-                    <div id="form-message-warning mt-4"></div>
-                        <div id="form-message-success" hidden=True>
-                            Your message was sent, thank you!
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

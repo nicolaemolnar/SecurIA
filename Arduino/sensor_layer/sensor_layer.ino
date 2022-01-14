@@ -1,11 +1,11 @@
 # include <WiFi.h>
 # include <PubSubClient.h>
 
-# define WIFI_SSID "Tomy Panini"
-# define WIFI_PASS "Alberto7"
+# define WIFI_SSID "MOVISTAR_8CC0"
+# define WIFI_PASS "7Y6L7o7wUfvB6GAC32Ns"
 # define SYSTEM_ID "1"
 
-const char* mqttServer = "192.168.43.24";
+const char* mqttServer = "192.168.1.38";
 const int mqttPort = 5555;
 const int n_ir_sensors = 1;
 

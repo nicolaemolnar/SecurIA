@@ -124,33 +124,6 @@ public class Logic {
         return images;
     }
 
-    public static void update_postgres_state(String command){
-        try {
-            ProcessBuilder pb = new ProcessBuilder(dbBin + "pg_ctl", command, "-D", dbPath);
-            pb.start();
-            Log.log.info("Postgres started");
-        } catch (IOException e) {
-            Log.log.error("Could not start postgres. Cause: " + e.getMessage());
-        }
-    }
-
-    public static boolean is_db_connected(){
-        try {
-            ProcessBuilder pb = new ProcessBuilder(dbBin + "pg_ctl", "status", "-D", dbPath);
-            Process p = pb.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains("server is running")) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            Log.log.error("Could not check if postgres is running. Cause: " + e.getMessage());
-        }
-        return false;
-    }
-
     public static boolean allows_notifications(int system_id) {
         boolean allow_notifications = false;
         // Obtain DB connection

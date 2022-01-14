@@ -82,15 +82,6 @@ public class DBConnection {
         Log.logdb.info("Transaction committed by connection " + csmt.getConnection());
     }
 
-    public void PreparedStatement(String sql) {
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            Log.logdb.info("Prepared statement " + sql + " created by connection " + connection);
-        } catch (SQLException e) {
-            Log.logdb.error("Error creating prepared statement:" + e.getMessage());
-        }
-    }
-
     /* ============================== SQL Calls ============================== */
     public String login(String email, String password) throws SQLException {
         // Prepare SQL call

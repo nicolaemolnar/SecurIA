@@ -10,6 +10,14 @@
     </description>
     <display-name>SecurIA</display-name>
 
+    <welcome-file-list>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+    <listener>
+        <listener-class>logic.ProjectInit</listener-class>
+    </listener>
+
     <servlet>
         <servlet-name>login</servlet-name>
         <servlet-class>servlets.LoginServlet</servlet-class>
@@ -43,6 +51,36 @@
     <servlet>
         <servlet-name>set_settings</servlet-name>
         <servlet-class>servlets.SetSettingsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>admin_sql</servlet-name>
+        <servlet-class>servlets.AdminSQLServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>gallery</servlet-name>
+        <servlet-class>servlets.GetImagesServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>delete_image</servlet-name>
+        <servlet-class>servlets.DeleteImageServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>streaming</servlet-name>
+        <servlet-class>servlets.GetStreamFrameServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>get_alerts</servlet-name>
+        <servlet-class>servlets.GetAlertsServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>delete_alert</servlet-name>
+        <servlet-class>servlets.DeleteAlertServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -80,4 +118,33 @@
         <url-pattern>/set_settings</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>admin_sql</servlet-name>
+        <url-pattern>/admin_sql</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>gallery</servlet-name>
+        <url-pattern>/gallery</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>delete_image</servlet-name>
+        <url-pattern>/delete_image</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>streaming</servlet-name>
+        <url-pattern>/streaming</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>get_alerts</servlet-name>
+        <url-pattern>/get_alerts</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>delete_alert</servlet-name>
+        <url-pattern>/delete_alert</url-pattern>
+    </servlet-mapping>
 </web-app>
