@@ -29,7 +29,7 @@ import java.util.Date;
 
 
 public class ConfigActivity extends Activity {
-    EditText firstName, surName, password, repeatedPassword, phone, birthDate;
+    EditText firstname, surname, password, repeatedPassword, phone, birthDate;
     Button btnBack,btnExit,saveUpdate;
     TextView showemail,textViewError;
 
@@ -49,8 +49,8 @@ public class ConfigActivity extends Activity {
         this.textViewError = this.findViewById(R.id.textViewError);
 
         //inicio de atributos de usuario y posibilidad de cambio de los mismos
-        this.firstName = this.findViewById(R.id.firstName);
-        this.surName = this.findViewById(R.id.surName);
+        this.firstname = this.findViewById(R.id.firstName);
+        this.surname = this.findViewById(R.id.surName);
         this.password = this.findViewById(R.id.password);
         this.repeatedPassword = this.findViewById(R.id.repeatedPassword);
         this.phone = this.findViewById(R.id.phone);
@@ -69,7 +69,7 @@ public class ConfigActivity extends Activity {
         String email = datosConfig.getString("email");
 
         String urlLoginServlet = "http://25.62.36.206:8080/securia/get_settings?email="+ email +"&device=android";
-        ConfigActivity.GetXMLTask task = new ConfigActivity.GetXMLTask();
+        ConfigActivity.GetXMLTask task = new ConfigActivity.GetXMLTask("get");
         task.execute(new String[] { urlLoginServlet });
 
         showemail.setText(email);
@@ -98,8 +98,8 @@ public class ConfigActivity extends Activity {
             public void onClick(View v) {
 
 
-                fir = firstName.getText().toString();
-                sur = surName.getText().toString();
+                fir = firstname.getText().toString();
+                sur = surname.getText().toString();
                 pass = password.getText().toString();
                 rpass = repeatedPassword.getText().toString();
                 pho = phone.getText().toString();
@@ -115,8 +115,8 @@ public class ConfigActivity extends Activity {
                     } else {
                         String urlSetServlet = "http://25.62.36.206:8080/securia/set_settings?email=" + email + "&password=" + pass + "&password_conf=" + rpass
                                 + "&firstname=" + fir + "&surname=" + sur + "&phone=" + pho + "&birthdate=" + brith
-                                + "&getPhotos=" + Photos + "&canStream=" + Stream + "&sendNotifications"+ Notifications;
-                        ConfigActivity.GetXMLTask task2 = new ConfigActivity.GetXMLTask();
+                                + "&getPhotos=" + Photos + "&canStream=" + Stream + "&sendNotifications="+ Notifications;
+                        ConfigActivity.GetXMLTask task2 = new ConfigActivity.GetXMLTask("set");
                         task2.execute(new String[]{urlSetServlet});
                         textViewError.setText("");
                     }
@@ -193,6 +193,11 @@ public class ConfigActivity extends Activity {
 
     private class GetXMLTask extends AsyncTask<String, Void, JSONObject> {
 
+        private String type;
+        public GetXMLTask(String type){
+            this.type = type;
+        }
+
         @Override
         protected JSONObject doInBackground(String... urls) { //Leer respuesta del servidor (String del JSON)
             JSONObject output = null;
@@ -243,17 +248,22 @@ public class ConfigActivity extends Activity {
         @Override
         protected void onPostExecute(JSONObject output) { //Analizar el resultado pagian web y redirigir o mostrar error
             try {
-                firstName.setText(output.getString("firstname"));
-                surName.setText(output.getString("surname"));
-                password.setText(output.getString("password"));
-                repeatedPassword.setText(output.getString("password"));
-                phone.setText(output.getString("phone"));
-                birthDate.setText(output.getString("birthdate"));
+                if(type.equals("get")) {
+                    firstname.setText(output.getString("firstname"));
+                    surname.setText(output.getString("surname"));
+                    password.setText(output.getString("password"));
+                    repeatedPassword.setText(output.getString("password"));
+                    phone.setText(output.getString("phone"));
+                    birthDate.setText(output.getString("birthdate"));
 
-                sendNotifications.setChecked(output.getBoolean("sendNotifications"));
-                captureFotos.setChecked(output.getBoolean("getPhotos"));
-                lifeStream.setChecked(output.getBoolean("canStream"));
-
+                    sendNotifications.setChecked(output.getBoolean("sendNotifications"));
+                    captureFotos.setChecked(output.getBoolean("getPhotos"));
+                    lifeStream.setChecked(output.getBoolean("canStream"));
+                }else if(type.equals("set")){
+                    if(!output.getBoolean("success")){
+                        textViewError.setText("An error occurred while submitting changes to the database");
+                    }
+                }
 
             } catch (JSONException jsonException) {
                 jsonException.printStackTrace();

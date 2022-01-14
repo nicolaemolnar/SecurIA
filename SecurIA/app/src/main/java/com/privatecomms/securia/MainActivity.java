@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notificationManagerCompat.notify(1, notification);
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);        // Specify any activity here e.g. home or splash or login etc
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
@@ -202,8 +201,8 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < n_imagenes; i++) {
                     String[] imagen = output.getString(String.valueOf(i)).replace("]","").replace("[","").split(",");
                     String base64String = imagen[0];
-                    String time = imagen[1];
-                    String etiqueta = imagen[2];
+                    String etiqueta = imagen[1];
+                    String time = imagen[2];
 
                     Bitmap bm = StringToBitMap(base64String);
 
@@ -211,10 +210,10 @@ public class MainActivity extends AppCompatActivity {
                     View view = inflater.inflate(R.layout.item, gallery, false);
 
                     TextView timestamp = view.findViewById(R.id.timestamp);
-                    timestamp.setText(time);
+                    timestamp.setText("DATE: "+time);
 
                     TextView label = view.findViewById(R.id.label);
-                    label.setText(etiqueta);
+                    label.setText("LABEL: "+etiqueta);
 
                     ImageView image = view.findViewById(R.id.image);
                     image.setImageBitmap(bm);

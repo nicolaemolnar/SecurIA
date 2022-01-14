@@ -70,7 +70,28 @@ public class Hilo extends Thread {
         //Callback of MQTT to process the information received by MQTT
         client.setCallback(new MqttCallback() {
             @Override
-            public void connectionLost(Throwable cause) {}
+            public void connectionLost(Throwable cause) {
+                try {
+                    IMqttToken token = client.connect();
+                    token.setActionCallback(new IMqttActionListener() {
+                        @Override
+                        public void onSuccess(IMqttToken asyncActionToken) {
+                            //If the connection is ok
+                            Log.i(tag, "MQTT connected");
+                            //Suscribe the topics
+                            suscripcionTopics(movement);
+                        }
+
+                        @Override
+                        public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                            // Something went wrong e.g. connection timeout or firewall problems
+                            Log.i(tag, "Error connecting MQTT");
+                        }
+                    });
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception
             {

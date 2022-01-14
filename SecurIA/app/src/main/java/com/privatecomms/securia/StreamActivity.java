@@ -33,7 +33,7 @@ import java.util.Timer;
 public class StreamActivity extends Activity {
 
     private Button btnBack;
-    TextView fecha, evento;
+    TextView fecha;
     ImageView imageStream;
 
     private boolean encendido= true;
@@ -49,7 +49,6 @@ public class StreamActivity extends Activity {
 
         this.btnBack = this.findViewById(R.id.btnBack);
         this.fecha = this.findViewById(R.id.fecha);
-        this.evento = this.findViewById(R.id.evento);
         this.imageStream = this.findViewById(R.id.imageStream);
 
         encendido= true;
@@ -76,7 +75,6 @@ public class StreamActivity extends Activity {
             if (output.getBoolean("success")) {
                 String base64String = output.getString("stream");
 
-                evento.setText(output.getString("label"));
                 fecha.setText(dateToString(LocalTime.now()));
 
                 Bitmap bm = StringToBitMap(base64String);
