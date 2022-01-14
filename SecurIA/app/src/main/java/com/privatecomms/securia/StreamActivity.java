@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Base64;
@@ -72,7 +73,7 @@ public class StreamActivity extends Activity {
 
     public void cambiaFrame(JSONObject output){
         try {
-            if (output.getBoolean("success")) {
+            if (!output.getString("stream").isEmpty()) {
                 String base64String = output.getString("stream");
 
                 fecha.setText(dateToString(LocalTime.now()));
@@ -80,7 +81,7 @@ public class StreamActivity extends Activity {
                 Bitmap bm = StringToBitMap(base64String);
                 imageStream.setImageBitmap(bm);
             } else {
-                // textViewError.setText("Email or Password are incorrect, try again.");
+                 imageStream.setImageResource(R.drawable.no_stream);
             }
         } catch (JSONException e) {
             e.printStackTrace();
