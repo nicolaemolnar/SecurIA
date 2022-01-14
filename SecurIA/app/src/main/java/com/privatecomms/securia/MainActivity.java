@@ -213,6 +213,9 @@ public class MainActivity extends AppCompatActivity {
                     TextView timestamp = view.findViewById(R.id.timestamp);
                     timestamp.setText(time);
 
+                    TextView label = view.findViewById(R.id.label);
+                    label.setText(etiqueta);
+
                     ImageView image = view.findViewById(R.id.image);
                     image.setImageBitmap(bm);
 
