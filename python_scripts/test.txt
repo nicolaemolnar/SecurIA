@@ -1,0 +1,94 @@
+{
+    Constructor de la clase Preso. Dados los datos de un preso crea una instancia del preso y asigna el 
+    valor de los parámetros a los atributos. Se necesita asignar el nuevo preso a un asistente.
+    
+    @param nombreUsuario: Nombre del preso.
+    @param nombreCompleto: Nombre completo del preso.
+    @param dni: DNI del preso.
+}
+proc Preso::Preso (nombreUsuario in: string[0..1], nombreCompleto in: string[0..1], dni in: string[0..1])
+    si (nombreUsuario) entonces
+        this.nombreUsuario <- nombreUsuario
+    sino 
+        this.nombreUsuario <- generarNombreUsuario(dni)
+    fsi
+
+    si (nombreCompleto) entonces
+        this.nombreCompleto <- nombreCompleto
+    fsi
+
+    si (dni) entonces
+        this.dni <- dni
+    fsi
+
+    this.asistente <- FachadaBD.setAsistente(this.nombreUsuario)
+fproc
+
+
+{
+    Se crea un Usuario de tipo Preso a partir de los datos recibidos de la interfaz. El nombreUsuario es opcional y
+    se genera de manera aleatoria en caso de no ser recibido por parámetro.
+
+    @param nombreUsuario: Nombre del preso.
+    @param nombreCompleto: Nombre completo del preso.
+    @param dni: DNI del preso.
+    @out preso: Instancia de la clase Preso.
+}
+func ControladorPersonalGestionDePresos::crearPreso(nombreUsuario in: string[0..1], nombreCompleto in: string[0..1], dni in: string[0..1], preso out: Preso)
+    preso <- Preso::Preso(nombreUsuario, nombreCompleto, dni)
+ffunc
+
+
+{
+    Método que recoge de la base de datos todas las actividades que no han sido validadas hasta el momento y se
+    las devuelve a la interfaz. Para hacerlo delega la tarea a la clase Actividad de manera estática.
+
+    @out actividades: Lista de actividades no validadas
+}
+func ControladorPersonalCoordinacionDeActividades::getActividadesNoValidadas()
+    actividades <- Actividad.getActividadesNoValidadas()
+ffunc
+
+{
+    Método que elimina una actividad de la base de datos dada una instancia de la clase Actividad. Para hacerlo 
+    delega la tarea a la clase Actividad de manera estática, pasándole como parámetro el identificador de la actividad.
+    
+    @param actividad: Instancia de la clase Actividad.
+}
+proc Actividad::eliminaActividad(actividad in: Actividad)
+    Actividad.eliminaActividad(actividad.getIdActividad())
+fproc
+
+
+{
+    El sistema asigna, dadas una lista de actividades y una lista de presos, una actividad a cada preso. Para hacerlo
+    pide las listas de presos y actividades a la base de datos y realiza la asignación según las semanas inactivas del
+    preso y la compatibilidad del tipo de condena del preso con la actividad.
+
+    @out actividades: Lista de actividades asignadas.
+}
+func ControladorSistema::realizarAsignacion(actividadesAsignadas out: Actividad [*])
+    diaActual <- Fecha.getDiaActual()
+    
+    si diaActual=4 entonces
+        actividades <- Actividad.getActividades()
+        presos <- Preso.getPresos()
+
+        para cada actividad en actividades hacer
+            mientras actividad.getPlazasDisponibles() > 0 hacer
+                minimo_preso <- presos[0]
+                para cada preso en presos hacer
+                    si (preso.getSemanasInactivas() < minimo_preso.getSemanasInactivas() y 
+                    contiene(actividad.getCondenasCompatibles, preso.getCondena().getTipoCondena()) entonces
+                        minimo_preso <- preso
+                    fsi
+                fpara
+
+                actividad.asignarPreso(minimo_preso)
+                actividadesAsignadas <- actividadesAsignadas + [actividad]
+            fmientras
+        fpara
+    sino
+        esperaJueves()
+    fsi
+ffunc

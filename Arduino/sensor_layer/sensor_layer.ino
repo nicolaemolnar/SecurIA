@@ -10,7 +10,7 @@ const int mqttPort = 5555;
 const int n_ir_sensors = 1;
 
 int ldr_pin = 35;
-int light_threshold = 100;
+int light_threshold = 150;
 
 int ir_pin[] = {39};
 int ir_length;
@@ -158,7 +158,7 @@ void setup_light_sensor(int ldr_pin){
 bool detect_movement(int ir_pin){
     int val = digitalRead(ir_pin);
     //Serial.println(val);
-    return !val;
+    return val;
 }
 
 bool can_see_entity(int ldr_pin, int threshold){
