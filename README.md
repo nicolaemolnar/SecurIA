@@ -1,7 +1,9 @@
 # ComputacionUbicua
-Proyecto "Seguridad en la vivienda"
+SecurIA - Proyecto enfocado a la seguridad de la vivienda.
 
-Bibliografia:
+Proyecto de IoT que involucra el uso de senores, servicios web y móviles e inteligencia artificial.
+
+# Bibliografia
 Conexión JSP con PostgreSQL: 
 	https://javalea.wordpress.com/2009/01/09/conexion-jsp-postgresql/
 Desarrollo de Aplicaciones Web con JSP y XML:
