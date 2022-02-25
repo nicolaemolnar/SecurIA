@@ -1,8 +1,8 @@
 # include <WiFi.h>
 # include <PubSubClient.h>
 
-# define WIFI_SSID "MOVISTAR_8CC0"
-# define WIFI_PASS "7Y6L7o7wUfvB6GAC32Ns"
+# define WIFI_SSID "MIWIFI"
+# define WIFI_PASS "MICONTRASEÑA"
 # define SYSTEM_ID "1"
 
 const char* mqttServer = "192.168.1.38";
